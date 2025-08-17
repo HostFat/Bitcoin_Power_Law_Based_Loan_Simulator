@@ -252,7 +252,7 @@
   function calculateSafeWithdrawal() {
     let low = 0, high = 1e7, safeWithdrawal = 0;
     const startYear = parseInt(startYearInput.value);
-    const endYear = parseInt(endYearInput.value);
+       const endYear = parseInt(endYearInput.value);
     const simulationYears = endYear - startYear;
     const btcAmount = parseFloat(btcAmountInput.value);
     if (btcAmount <= 0) return;
@@ -345,10 +345,12 @@
   }
 
   function updateLoanSimulation(btcAmount, inflationRate, initialAnnualWithdrawal, startYear, simulationYears) {
-    const ltv = parseInt(ltvInput.value);
+    const ltvPercent = parseInt(ltvInput.value);
+    const ltvFrac = ltvPercent / 100;
     const interestRate = parseFloat(interestRateInput.value);
     const LIQUIDATION_TOLERANCE = 1e-9;
 
+    // Added new column header "Required BTC Collateral"
     resultsTableHeader.innerHTML = `
       <tr>
         <th class="px-6 py-3">Year</th>
@@ -356,6 +358,7 @@
         <th class="px-6 py-3">Maximum Possible Loan ($)</th>
         <th class="px-6 py-3">Total Debt ($)</th>
         <th class="px-6 py-3">Annual Interest ($)</th>
+        <th class="px-6 py-3">Required BTC Collateral</th>
         <th class="px-6 py-3">Additional Collateral Required (BTC)</th>
       </tr>`;
 
@@ -367,8 +370,8 @@
       const year = startYear + i;
       const date = new Date(year, 0, 1);
       const daysSinceGenesis = Math.floor((date - GENESIS_DATE) / 86400000);
-      const finalPrice = powerLawPrice(daysSinceGenesis);
-      const maxLoanPossible = finalPrice * btcAmount * (ltv / 100);
+      const supportPrice = powerLawPrice(daysSinceGenesis);
+      const maxLoanPossible = supportPrice * btcAmount * ltvFrac;
 
       const currentYearWithdrawal = initialAnnualWithdrawal * Math.pow(1 + (inflationRate / 100), i);
       const debtBeforeInterest = totalDebt + currentYearWithdrawal;
@@ -378,13 +381,17 @@
       const isLiquidatedThisYear = totalDebt - maxLoanPossible > LIQUIDATION_TOLERANCE;
       if (!hasBeenLiquidated && isLiquidatedThisYear) hasBeenLiquidated = true;
 
+      // New metric: total required BTC collateral to sustain the current year's totalDebt at this year's support price and LTV
+      const requiredBtcCollateral = supportPrice > 0 && ltvFrac > 0 ? (totalDebt / (supportPrice * ltvFrac)) : 0;
+
+      // Existing extra collateral needed beyond current btcAmount if liquidated
       let additionalBtcNeeded = 0;
       if (isLiquidatedThisYear) {
-        additionalBtcNeeded = (totalDebt - maxLoanPossible) / (finalPrice * (ltv / 100));
+        additionalBtcNeeded = (totalDebt - maxLoanPossible) / (supportPrice * ltvFrac);
       }
 
       labels.push(year);
-      priceData.push(finalPrice);
+      priceData.push(supportPrice);
       maxLoanData.push(maxLoanPossible);
       totalDebtData.push(totalDebt);
 
@@ -394,14 +401,16 @@
       resultsTableBody.innerHTML += `
         <tr class="${rowClass} border-b hover:bg-stone-50">
           <td class="px-6 py-4 font-medium text-slate-900">${year}</td>
-          <td class="px-6 py-4">${formatCurrency(finalPrice)}</td>
+          <td class="px-6 py-4">${formatCurrency(supportPrice)}</td>
           <td class="px-6 py-4">${formatCurrency(maxLoanPossible)}</td>
           <td class="px-6 py-4 font-bold ${textColorClass}">${formatCurrency(totalDebt)}</td>
           <td class="px-6 py-4">${formatCurrency(interestForYear)}</td>
+          <td class="px-6 py-4">${formatBTC(requiredBtcCollateral)}</td>
           <td class="px-6 py-4 font-bold ${textColorClass}">${additionalBtcNeeded > 0 ? formatBTC(additionalBtcNeeded) : 'None'}</td>
         </tr>`;
     }
 
+    // Chart
     mainChart.options.scales = {
       yPrice: { type: 'logarithmic', position: 'left', title: { display: true, text: 'BTC Price ($)' }, ticks: { callback: (v) => formatCurrency(v) } },
       yLoan:  { type: 'logarithmic', position: 'right', title: { display: true, text: 'Loan/Debt Amount ($)' }, ticks: { callback: (v) => formatCurrency(v) }, grid: { drawOnChartArea: false } },
@@ -489,7 +498,7 @@
     interestRateInput.addEventListener('input', () => updateSliderLabel(interestRateInput, interestRateValueSpan, true));
     inflationRateInput.addEventListener('input', () => updateSliderLabel(inflationRateInput, inflationRateValueSpan, true));
 
-    // Start Year: update label and enforce endYear >= startYear + 1 (adjust endYear only if invalid)
+    // Start Year: enforce endYear >= startYear + 1; adjust endYear only if invalid
     startYearInput.addEventListener('input', () => {
       updateSliderLabel(startYearInput, startYearValueSpan);
       const minEnd = parseInt(startYearInput.value) + 1;
@@ -501,13 +510,13 @@
       updateSimulation();
     });
 
-    // End Year: update label and only update startYear's max, do NOT change startYear value
+    // End Year: update only its own value and startYear's max; do NOT change startYear value
     endYearInput.addEventListener('input', () => {
       updateSliderLabel(endYearInput, endYearValueSpan);
       const newMaxForStart = parseInt(endYearInput.value) - 1;
       startYearInput.max = String(newMaxForStart);
 
-      // Prevent endYear < startYear + 1 by correcting endYear itself (do not touch startYear)
+      // Prevent endYear < startYear + 1 by correcting endYear (do not touch startYear)
       const startVal = parseInt(startYearInput.value);
       const minEnd = startVal + 1;
       if (parseInt(endYearInput.value) < minEnd) {
@@ -551,4 +560,3 @@
 </script>
 </body>
 </html>
-
