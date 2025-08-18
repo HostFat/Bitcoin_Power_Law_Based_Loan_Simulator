@@ -21,6 +21,8 @@
     .number-input { width: 100%; }
     .row-red { background-color: #fee2e2; }
     .hidden { display: none; }
+    #powerLawInfoBox a { color: #0d9488; text-decoration: underline; }
+    #powerLawInfoBox ul { list-style: disc; padding-left: 1.25rem; }
   </style>
 </head>
 <body class="bg-stone-50 text-slate-800">
@@ -36,11 +38,16 @@
     <section class="mb-8">
       <div id="powerLawInfoBox" class="bg-white p-6 rounded-xl shadow-md border border-stone-200">
         <h3 class="text-xl font-semibold mb-3 text-slate-700">What is the Power Law Support Line?</h3>
-        <div id="powerLawInfoContent" class="text-sm text-slate-600 space-y-4">
-          The 'Power Law Support Line' is a mathematical model that plots a historical support level for Bitcoin's price over time. This simulator uses this formula to project a future support value for BTC.
-          <br><br>
-          <strong>Formula:</strong>
-          <pre><code>Support Price = (1.0117e-17 × days_since_genesis^5.82) × 0.42</code></pre>
+        <div id="powerLawInfoContent" class="text-sm text-slate-600 space-y-3">
+          <p>The 'Power Law Support Line' is a mathematical model that plots a historical support level for Bitcoin's price over time. This simulator uses this formula to project a future support value for BTC.</p>
+          <p><strong>Formula:</strong> <code>Support Price = (1.0117e-17 × days_since_genesis^5.82) × 0.42</code></p>
+          <div>
+            <strong>Sources:</strong>
+            <ul>
+              <li><a href="https://giovannisantostasi.medium.com/the-bitcoin-power-law-theory-962dfaf99ee9" target="_blank" rel="noopener noreferrer">The Bitcoin Power Law Theory (Giovanni Santostasi)</a></li>
+              <li><a href="https://charts.bitbo.io/long-term-power-law/" target="_blank" rel="noopener noreferrer">Bitbo: Long-term Power Law chart</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
@@ -60,7 +67,7 @@
             </div>
 
             <div>
-              <label id="btcAmountLabel" for="btcAmount" class="block font-medium text-slate-600">BTC for Collateral</label>
+              <label id="btcAmountLabel" for="btcAmount" class="block font-medium text-slate-600 cursor-pointer">BTC for Collateral</label>
               <div class="flex items-center space-x-2 mt-1">
                 <input type="number" id="btcAmount" value="1.00000000" step="0.00000001" min="0" max="1000000" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                 <button type="button" id="calculateSafeCollateralBtn" class="px-3 py-2 bg-teal-600 text-white rounded-md shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 text-sm whitespace-nowrap">Calculate Safe BTC</button>
@@ -344,15 +351,12 @@
 
     const rows = computeLoanRows(btcAmount, startYear, years);
 
-    // Picco globale e indice del primo picco
+    // Global peak and first peak year
     let globalPeak = 0, firstPeakIndex = -1;
     rows.forEach(r => { if (r.requiredBtcCollateral > globalPeak + 1e-18) { globalPeak = r.requiredBtcCollateral; firstPeakIndex = r.i; } });
     if (firstPeakIndex === -1) firstPeakIndex = rows.length - 1;
 
-    // Picco progressivo per segno negativo prima del picco
     let progressivePeak = 0;
-
-    // Flag: dopo la prima liquidazione, tutte le righe successive rosse
     let liquidationOccurred = false;
 
     const labels = [], priceData = [], maxLoanData = [], totalDebtData = [];
@@ -362,7 +366,7 @@
 
       if (requiredBtcCollateral > progressivePeak) progressivePeak = requiredBtcCollateral;
 
-      // Unused vs Peak: negativo prima del picco, 0 al picco, positivo dopo
+      // Unused vs Peak sign logic
       let unusedSigned;
       if (i < firstPeakIndex) {
         unusedSigned = btcAmount - progressivePeak;
@@ -373,7 +377,6 @@
         unusedSigned = Math.max(0, globalPeak - requiredBtcCollateral);
       }
 
-      // Liquidazione
       const isLiquidated = totalDebt > maxLoanPossible + 1e-9;
       if (isLiquidated) liquidationOccurred = true;
 
@@ -382,16 +385,14 @@
       maxLoanData.push(maxLoanPossible);
       totalDebtData.push(totalDebt);
 
-      // Righe rosse a cascata dopo la prima liquidazione
-      const rowRed = liquidationOccurred ? 'row-red' : 'bg-white';
+      const rowClass = liquidationOccurred ? 'row-red' : 'bg-white';
       const textColorClass = liquidationOccurred ? 'text-red-600' : 'text-slate-800';
       const colorUnused = unusedSigned < 0 ? 'text-red-600' : (unusedSigned > 0 ? 'text-emerald-700' : '');
-
       const ltvFrac = (parseInt(ltvInput.value) || 0) / 100 || 1;
       const addBtc = isLiquidated ? (totalDebt - maxLoanPossible) / (supportPrice * ltvFrac) : 0;
 
       resultsTableBody.innerHTML += `
-        <tr class="${rowRed} border-b hover:bg-stone-50">
+        <tr class="${rowClass} border-b hover:bg-stone-50">
           <td class="px-6 py-4 font-medium ${liquidationOccurred ? 'text-red-700' : 'text-slate-900'}">${year}</td>
           <td class="px-6 py-4">${formatCurrency(supportPrice)}</td>
           <td class="px-6 py-4">${formatCurrency(maxLoanPossible)}</td>
@@ -403,19 +404,17 @@
         </tr>`;
     });
 
-    // Aggiorna il campo target con i BTC non usati come collaterale nell’ultimo anno
-    if (document.activeElement !== targetUnusedVsPeakFinalInput) {
+    // Update target field: BTC not used as collateral in the final year
+    if (document.activeElement !== targetUnusedVsPeakFinalInput && rows.length > 0) {
       const last = rows[rows.length - 1];
       const progPeakFinal = Math.max(...rows.slice(0, last.i + 1).map(r => r.requiredBtcCollateral));
       let finalUnused;
       if (last.i < firstPeakIndex) {
-        // prima del picco: negativo
         finalUnused = (btcAmount - progPeakFinal);
         if (finalUnused > 0) finalUnused = -finalUnused;
       } else if (last.i === firstPeakIndex) {
         finalUnused = 0;
       } else {
-        // dopo il picco: positivo = globalPeak - required(final year)
         finalUnused = Math.max(0, globalPeak - last.requiredBtcCollateral);
       }
       targetUnusedVsPeakFinalInput.value = formatBTCPlain(finalUnused);
@@ -438,7 +437,7 @@
   }
 
   function renderSell(btcAmount, startYear, years) {
-    // UI hide
+    // UI hide loan params and target
     loanParams.classList.add('hidden');
     targetContainer.classList.add('hidden');
     chartTitleEl.textContent = 'Remaining BTC Balance Projection';
@@ -599,7 +598,12 @@
       else autoCalcBtcForSell();
     });
 
-    // Target editor (solo LOAN): BTC = peak + target
+    // Click on label for SELL to auto-calc minimal BTC
+    btcAmountLabel.addEventListener('click', () => {
+      if (simulationMode === 'sell') autoCalcBtcForSell();
+    });
+
+    // Target editor (only LOAN): BTC = peak + target
     let applyTimeout;
     targetUnusedVsPeakFinalInput.addEventListener('input', () => {
       if (simulationMode !== 'loan') return;
@@ -615,7 +619,6 @@
 
       const desiredBtc = Math.max(0, peak + target);
       const currentBtc = parseFloat(btcAmountInput.value) || 0;
-
       if (Math.abs(desiredBtc - currentBtc) > 1e-9) {
         if (applyTimeout) clearTimeout(applyTimeout);
         applyTimeout = setTimeout(() => {
@@ -645,7 +648,7 @@
     setupEventListeners();
     initializeChart();
 
-    // Default: LOAN con calcolo automatico del collaterale sicuro
+    // Default: LOAN with automatic safe collateral
     calculateSafeCollateral();
   };
 </script>
