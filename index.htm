@@ -120,18 +120,26 @@
 
             <!-- Optimized Withdrawal Controls -->
             <div id="optimizedWithdrawalControls" class="hidden">
-              <div>
-                <label for="safetyMargin" class="block font-medium text-slate-600">
-                  Safety Margin: <span id="safetyMarginValue" class="font-bold text-teal-700">5.0</span>%
-                </label>
-                <div class="flex items-center space-x-2 mt-1">
-                  <input type="range" id="safetyMargin" min="0" max="100" step="0.5" value="5" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600">
-                  <button type="button" id="maximizeSafetyMarginBtn" class="px-3 py-2 bg-amber-600 text-white rounded-md shadow-sm hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 text-sm whitespace-nowrap text-center">
-                    <div class="font-medium">Maximize</div>
-                    <div class="text-xs opacity-80">Wait a little</div>
-                  </button>
+              <div class="space-y-4">
+                <div>
+                  <label for="safetyMargin" class="block font-medium text-slate-600">
+                    Safety Margin: <span id="safetyMarginValue" class="font-bold text-teal-700">5.0</span>%
+                  </label>
+                  <div class="flex items-center space-x-2 mt-1">
+                    <input type="range" id="safetyMargin" min="0" max="100" step="0.5" value="5" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600">
+                    <button type="button" id="maximizeSafetyMarginBtn" class="px-3 py-2 bg-amber-600 text-white rounded-md shadow-sm hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 text-sm whitespace-nowrap text-center">
+                      <div class="font-medium">Maximize</div>
+                      <div class="text-xs opacity-80">Wait a little</div>
+                    </button>
+                  </div>
+                  <p class="text-xs text-slate-500 mt-1">Reduces max withdrawal capacity by this percentage to avoid liquidation risk. 5% = use only 95% of available capacity.</p>
                 </div>
-                <p class="text-xs text-slate-500 mt-1">Reduces max withdrawal capacity by this percentage to avoid liquidation risk. 5% = use only 95% of available capacity.</p>
+
+                <div>
+                  <label for="minWithdrawal" class="block font-medium text-slate-600">Minimum Withdrawal ($)</label>
+                  <input type="number" id="minWithdrawal" value="0" step="100" min="0" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 mt-1">
+                  <p class="text-xs text-slate-500 mt-1">Minimum annual withdrawal amount. Optimized withdrawals will never go below this value.</p>
+                </div>
               </div>
             </div>
 
@@ -204,6 +212,7 @@
   const inflationRateInput = document.getElementById('inflationRate');
   const annualWithdrawalInput = document.getElementById('annualWithdrawal');
   const safetyMarginInput = document.getElementById('safetyMargin');
+  const minWithdrawalInput = document.getElementById('minWithdrawal');
   const maximizeSafetyMarginBtn = document.getElementById('maximizeSafetyMarginBtn');
   const startYearInput = document.getElementById('startYear');
   const endYearInput = document.getElementById('endYear');
@@ -288,12 +297,92 @@
     return false;
   }
 
+  // Check if optimized strategy would cause liquidation
+  function runOptimizedLoanUnsafeCheck(btcAmount, startYear, simulationYears) {
+    try {
+      const ltvFrac = (parseInt(ltvInput.value) || 0) / 100;
+      const interestRate = parseFloat(interestRateInput.value) || 0;
+      const inflationRate = parseFloat(inflationRateInput.value) || 0;
+      const safetyMargin = parseFloat(safetyMarginInput.value) || 0;
+      const minWithdrawal = parseFloat(minWithdrawalInput.value) || 0;
+      const safetyFactor = (100 - safetyMargin) / 100;
+      const EPS = 1e-9;
+
+      const withdrawals = [];
+      let totalDebt = 0;
+
+      for (let currentYear = 0; currentYear <= simulationYears; currentYear++) {
+        // Calculate maximum withdrawal for this year
+        let maxWithdrawal = 0;
+        let low = 0, high = 1e7;
+
+        for (let iter = 0; iter < 50; iter++) {
+          const testWithdrawal = (low + high) / 2;
+          let testDebt = totalDebt;
+          let wouldLiquidate = false;
+
+          for (let futureYear = currentYear; futureYear <= simulationYears; futureYear++) {
+            const date = new Date(startYear + futureYear, 0, 1);
+            const days = Math.floor((date - GENESIS_DATE) / 86400000);
+            const price = powerLawPrice(days);
+            const maxCapacity = price * btcAmount * ltvFrac;
+
+            const withdrawal = (futureYear === currentYear) 
+              ? testWithdrawal
+              : (withdrawals[futureYear] || testWithdrawal);
+            
+            const adjustedWithdrawal = withdrawal * Math.pow(1 + (inflationRate / 100), futureYear);
+            testDebt += adjustedWithdrawal;
+            testDebt *= (1 + interestRate / 100);
+
+            if (testDebt > maxCapacity + EPS) {
+              wouldLiquidate = true;
+              break;
+            }
+          }
+
+          if (wouldLiquidate) {
+            high = testWithdrawal;
+          } else {
+            maxWithdrawal = testWithdrawal;
+            low = testWithdrawal;
+          }
+        }
+
+        // Apply safety margin and minimum withdrawal
+        let safeWithdrawal = maxWithdrawal * safetyFactor;
+        safeWithdrawal = Math.max(safeWithdrawal, minWithdrawal);
+        withdrawals[currentYear] = safeWithdrawal;
+
+        // Update debt
+        const adjustedWithdrawal = safeWithdrawal * Math.pow(1 + (inflationRate / 100), currentYear);
+        totalDebt += adjustedWithdrawal;
+        totalDebt *= (1 + interestRate / 100);
+
+        // Check if this causes liquidation
+        const date = new Date(startYear + currentYear, 0, 1);
+        const days = Math.floor((date - GENESIS_DATE) / 86400000);
+        const price = powerLawPrice(days);
+        const maxLoanPossible = price * btcAmount * ltvFrac;
+        
+        if (totalDebt > maxLoanPossible + EPS) {
+          return true;
+        }
+      }
+
+      return false;
+    } catch (error) {
+      return true; // Return true (unsafe) if calculation fails
+    }
+  }
+
   // Optimized withdrawal calculator
-  function calculateOptimizedWithdrawals(btcAmount, startYear, simulationYears, safetyMarginOverride = null) {
+  function calculateOptimizedWithdrawals(btcAmount, startYear, simulationYears, safetyMarginOverride = null, minWithdrawalOverride = null) {
     const ltvFrac = (parseInt(ltvInput.value) || 0) / 100;
     const interestRate = parseFloat(interestRateInput.value) || 0;
     const inflationRate = parseFloat(inflationRateInput.value) || 0;
     const safetyMargin = safetyMarginOverride !== null ? safetyMarginOverride : (parseFloat(safetyMarginInput.value) || 0);
+    const minWithdrawal = minWithdrawalOverride !== null ? minWithdrawalOverride : (parseFloat(minWithdrawalInput.value) || 0);
     const safetyFactor = (100 - safetyMargin) / 100; // 5% margin = 0.95 factor
 
     const withdrawals = [];
@@ -341,7 +430,11 @@
       }
 
       // Apply safety margin
-      const safeWithdrawal = maxWithdrawal * safetyFactor;
+      let safeWithdrawal = maxWithdrawal * safetyFactor;
+      
+      // Apply minimum withdrawal constraint
+      safeWithdrawal = Math.max(safeWithdrawal, minWithdrawal);
+      
       withdrawals[currentYear] = safeWithdrawal;
 
       // Update debt for next iteration
@@ -726,6 +819,22 @@
     updateSimulation();
   }
 
+  // NEW: Calculate safe collateral for optimized strategy
+  function calculateSafeCollateralOptimized() {
+    const startYear = parseInt(startYearInput.value);
+    const endYear = parseInt(endYearInput.value);
+    const years = endYear - startYear;
+
+    let low = 0, high = 1e6, best = high;
+    for (let k = 0; k < 80; k++) {
+      const mid = (low + high) / 2;
+      const unsafe = runOptimizedLoanUnsafeCheck(mid, startYear, years);
+      if (!unsafe) { best = mid; high = mid; } else { low = mid; }
+    }
+    btcAmountInput.value = (Math.ceil(best * 1e8) / 1e8).toFixed(8);
+    updateSimulation();
+  }
+
   function autoCalcBtcForSell() {
     const startYear = parseInt(startYearInput.value);
     const endYear = parseInt(endYearInput.value);
@@ -813,7 +922,7 @@
       updateSimulation();
     });
 
-    [btcAmountInput, ltvInput, interestRateInput, inflationRateInput, annualWithdrawalInput, safetyMarginInput]
+    [btcAmountInput, ltvInput, interestRateInput, inflationRateInput, annualWithdrawalInput, safetyMarginInput, minWithdrawalInput]
       .forEach(input => input.addEventListener('change', updateSimulation));
 
     // Strategy mode switch
@@ -849,10 +958,14 @@
     // FIXED: Calculate Safe Amount now works for both LOAN and SELL modes
     document.getElementById('calculateSafeWithdrawalBtn').addEventListener('click', calculateSafeWithdrawal);
 
+    // FIXED: Calculate Safe BTC now works for both Fixed and Optimized modes
     document.getElementById('calculateSafeCollateralBtn').addEventListener('click', () => {
       if (simulationMode === 'loan') {
-        if (withdrawalMode === 'fixed') calculateSafeCollateral();
-        else updateSimulation(); // Just recalc for optimized mode
+        if (withdrawalMode === 'fixed') {
+          calculateSafeCollateral();
+        } else {
+          calculateSafeCollateralOptimized();
+        }
       } else {
         autoCalcBtcForSell();
       }
