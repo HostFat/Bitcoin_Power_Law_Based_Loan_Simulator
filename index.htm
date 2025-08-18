@@ -181,7 +181,10 @@
 
     <section class="mt-8">
       <div class="bg-white rounded-xl shadow-lg border border-stone-200 overflow-hidden">
-        <h2 id="tableTitle" class="text-2xl font-semibold p-6 text-slate-700">Loan Calculation Details</h2>
+        <div class="flex justify-between items-baseline p-6 border-b">
+          <h2 id="tableTitle" class="text-2xl font-semibold text-slate-700"></h2>
+          <p id="tableSubtitle" class="text-base font-medium text-blue-800 whitespace-nowrap"></p>
+        </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-left text-slate-500">
             <thead id="resultsTableHeader" class="text-xs text-slate-700 uppercase bg-stone-100"></thead>
@@ -230,6 +233,7 @@
   const targetUnusedVsPeakFinalInput = document.getElementById('targetUnusedVsPeakFinal');
   const chartTitleEl = document.getElementById('chartTitle');
   const tableTitleEl = document.getElementById('tableTitle');
+  const tableSubtitle = document.getElementById('tableSubtitle');
   const btcAmountLabel = document.getElementById('btcAmountLabel');
   const loanParams = document.getElementById('loanParams');
   const fixedWithdrawalControls = document.getElementById('fixedWithdrawalControls');
@@ -636,11 +640,15 @@
         </tr>`;
     });
 
+    const strategyDescription = withdrawalMode === 'optimized' ? 'Optimized withdrawal strategy' : 'Fixed withdrawal strategy';
+    tableSubtitle.innerHTML = `<strong>TOTAL EXTRACTED: ${formatCurrency(totalExtracted)}</strong> <span class="text-sm text-slate-600 font-normal ml-2">- ${strategyDescription}</span>`;
+    
+    // **KEY CHANGE**: Re-add the summary row at the bottom of the table
     resultsTableBody.innerHTML += `
       <tr class="bg-blue-100 border-t-2 border-blue-300 font-semibold">
         <td class="px-6 py-4 text-blue-800" colspan="3"><strong>TOTAL EXTRACTED:</strong></td>
         <td class="px-6 py-4 text-blue-800"><strong>${formatCurrency(totalExtracted)}</strong></td>
-        <td colspan="5" class="px-6 py-4 text-xs text-blue-600">${withdrawalMode === 'optimized' ? 'Optimized withdrawal maximizes capital efficiency' : 'Fixed withdrawal strategy with consistent annual amounts'}</td>
+        <td colspan="5" class="px-6 py-4 text-xs text-blue-600">${strategyDescription}</td>
       </tr>`;
 
     mainChart.options.scales = {
@@ -705,6 +713,9 @@
         </tr>`;
     });
 
+    tableSubtitle.innerHTML = `<strong>TOTAL WITHDRAWN: ${formatCurrency(totalWithdrawn)}</strong>`;
+    
+    // **KEY CHANGE**: Re-add the summary row at the bottom of the table
     resultsTableBody.innerHTML += `
       <tr class="bg-blue-100 border-t-2 border-blue-300 font-semibold">
         <td class="px-6 py-4 text-blue-800" colspan="2"><strong>TOTAL WITHDRAWN:</strong></td>
@@ -951,3 +962,4 @@
 </script>
 </body>
 </html>
+
