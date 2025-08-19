@@ -164,7 +164,7 @@
                 Unused BTC vs Peak at final year (target)
               </label>
               <input type="number" id="targetUnusedVsPeakFinal" value="0.00000000" step="0.00000001" min="-1000000" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-              <p class="text-xs text-slate-500 mt-1">Shows BTC not used as collateral in the final year. Edit to require a target; BTC for Collateral = peak + target.</p>
+              <p id="targetDescription" class="text-xs text-slate-500 mt-1">Shows BTC not used as collateral in the final year. Edit to require a target; BTC for Collateral = peak + target.</p>
             </div>
 
           </div>
@@ -231,6 +231,7 @@
   const resultsTableBody = document.getElementById('resultsTableBody');
   const targetContainer = document.getElementById('targetContainer');
   const targetUnusedVsPeakFinalInput = document.getElementById('targetUnusedVsPeakFinal');
+  const targetDescriptionEl = document.getElementById('targetDescription');
   const chartTitleEl = document.getElementById('chartTitle');
   const tableTitleEl = document.getElementById('tableTitle');
   const tableSubtitle = document.getElementById('tableSubtitle');
@@ -552,7 +553,7 @@
 
   function renderLoan(btcAmount, startYear, years) {
     loanParams.classList.remove('hidden');
-    targetContainer.classList.remove('hidden');
+    targetContainer.classList.remove('hidden');  // Always show target field
     chartTitleEl.textContent = 'Debt vs. Capacity Projection';
     tableTitleEl.textContent = 'Loan Calculation Details';
     btcAmountLabel.textContent = 'BTC for Collateral';
@@ -597,21 +598,25 @@
     rows.forEach(r => {
       const { i, year, supportPrice, totalDebt, interestForYear, requiredBtcCollateral, maxLoanPossible, adjustedWithdrawal } = r;
 
-      totalExtracted += adjustedWithdrawal;
+      const isLiquidated = totalDebt > maxLoanPossible + 1e-9;
+      if (isLiquidated) liquidationOccurred = true;
+      
+      // Only count withdrawals until liquidation occurs
+      if (!liquidationOccurred) {
+        totalExtracted += adjustedWithdrawal;
+      }
+      
       if (r.requiredBtcCollateral > progressivePeak) progressivePeak = r.requiredBtcCollateral;
 
       let unusedSigned;
       if (i < firstPeakIndex) {
-        unusedSigned = btcAmount - progressivePeak;
-        if (unusedSigned > 0) unusedSigned = -unusedSigned;
+        // Before peak: show difference between current required and global peak (negative)
+        unusedSigned = r.requiredBtcCollateral - globalPeak;
       } else if (i === firstPeakIndex) {
         unusedSigned = 0;
       } else {
         unusedSigned = Math.max(0, globalPeak - r.requiredBtcCollateral);
       }
-
-      const isLiquidated = totalDebt > maxLoanPossible + 1e-9;
-      if (isLiquidated) liquidationOccurred = true;
 
       labels.push(year);
       priceData.push(supportPrice);
@@ -640,10 +645,28 @@
         </tr>`;
     });
 
+    // Update target field with final year's unused vs peak value
+    if (rows.length > 0 && simulationMode === 'loan') {
+      const lastRow = rows[rows.length - 1];
+      const finalUnused = globalPeak - lastRow.requiredBtcCollateral;
+      targetUnusedVsPeakFinalInput.value = finalUnused.toFixed(8);
+      
+      // Make field read-only in optimized mode
+      if (withdrawalMode === 'optimized') {
+        targetUnusedVsPeakFinalInput.readOnly = true;
+        targetUnusedVsPeakFinalInput.style.backgroundColor = '#f3f4f6';
+        targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. (Read-only in Optimized mode)';
+      } else {
+        targetUnusedVsPeakFinalInput.readOnly = false;
+        targetUnusedVsPeakFinalInput.style.backgroundColor = 'white';
+        targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. Edit to require a target; BTC for Collateral = peak + target.';
+      }
+    }
+
     const strategyDescription = withdrawalMode === 'optimized' ? 'Optimized withdrawal strategy' : 'Fixed withdrawal strategy';
     tableSubtitle.innerHTML = `<strong>TOTAL EXTRACTED: ${formatCurrency(totalExtracted)}</strong> <span class="text-sm text-slate-600 font-normal ml-2">- ${strategyDescription}</span>`;
     
-    // **KEY CHANGE**: Re-add the summary row at the bottom of the table
+    // Summary row at the bottom of the table
     resultsTableBody.innerHTML += `
       <tr class="bg-blue-100 border-t-2 border-blue-300 font-semibold">
         <td class="px-6 py-4 text-blue-800" colspan="3"><strong>TOTAL EXTRACTED:</strong></td>
@@ -697,7 +720,10 @@
       const { year, supportPrice, usdToWithdraw, btcSold, remainingBtc, depleted } = r;
       labels.push(year);
       balanceData.push(remainingBtc);
-      totalWithdrawn += usdToWithdraw;
+      
+      // Calculate actual USD withdrawn (when depleted, only count what was actually sold)
+      const actualWithdrawn = btcSold * supportPrice;
+      totalWithdrawn += actualWithdrawn;
 
       const rowClass = depleted ? 'row-red' : 'bg-white';
       const balanceCell = depleted ? 'Depleted' : formatBTC(remainingBtc);
@@ -713,14 +739,14 @@
         </tr>`;
     });
 
-    tableSubtitle.innerHTML = `<strong>TOTAL WITHDRAWN: ${formatCurrency(totalWithdrawn)}</strong>`;
+    tableSubtitle.innerHTML = `<strong>TOTAL WITHDRAWN (ACTUAL): ${formatCurrency(totalWithdrawn)}</strong>`;
     
-    // **KEY CHANGE**: Re-add the summary row at the bottom of the table
+    // Summary row at the bottom of the table
     resultsTableBody.innerHTML += `
       <tr class="bg-blue-100 border-t-2 border-blue-300 font-semibold">
-        <td class="px-6 py-4 text-blue-800" colspan="2"><strong>TOTAL WITHDRAWN:</strong></td>
+        <td class="px-6 py-4 text-blue-800" colspan="2"><strong>TOTAL WITHDRAWN (ACTUAL):</strong></td>
         <td class="px-6 py-4 text-blue-800"><strong>${formatCurrency(totalWithdrawn)}</strong></td>
-        <td colspan="2" class="px-6 py-4 text-xs text-blue-600">Total amount withdrawn over the simulation period</td>
+        <td colspan="2" class="px-6 py-4 text-xs text-blue-600">Actual amount withdrawn over the simulation period</td>
       </tr>`;
 
     mainChart.options.scales = {
@@ -856,13 +882,18 @@
     // Strategy mode switch
     modeLoanBtn.addEventListener('click', () => {
       simulationMode = 'loan';
-      // **KEY CHANGE**: Always reset to Fixed when returning to LOAN mode.
+      // Always reset to Fixed when returning to LOAN mode.
       withdrawalMode = 'fixed';
       modeFixedWithdrawalBtn.classList.add('active');
       modeOptimizedWithdrawalBtn.classList.remove('active');
       
       modeLoanBtn.classList.add('active'); 
       modeSellBtn.classList.remove('active');
+      
+      // Reset target field to editable
+      targetUnusedVsPeakFinalInput.readOnly = false;
+      targetUnusedVsPeakFinalInput.style.backgroundColor = 'white';
+      targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. Edit to require a target; BTC for Collateral = peak + target.';
       
       calculateSafeCollateral();
     });
@@ -879,6 +910,9 @@
       withdrawalMode = 'fixed';
       modeFixedWithdrawalBtn.classList.add('active'); 
       modeOptimizedWithdrawalBtn.classList.remove('active');
+      targetUnusedVsPeakFinalInput.readOnly = false;
+      targetUnusedVsPeakFinalInput.style.backgroundColor = 'white';
+      targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. Edit to require a target; BTC for Collateral = peak + target.';
       updateSimulation();
     });
 
@@ -886,6 +920,9 @@
       withdrawalMode = 'optimized';
       modeOptimizedWithdrawalBtn.classList.add('active'); 
       modeFixedWithdrawalBtn.classList.remove('active');
+      targetUnusedVsPeakFinalInput.readOnly = true;
+      targetUnusedVsPeakFinalInput.style.backgroundColor = '#f3f4f6';
+      targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. (Read-only in Optimized mode)';
       updateSimulation();
     });
 
@@ -913,7 +950,7 @@
     // Target editor (only LOAN in fixed mode)
     let applyTimeout;
     targetUnusedVsPeakFinalInput.addEventListener('input', () => {
-      if (simulationMode !== 'loan' || withdrawalMode === 'optimized') return;
+      if (simulationMode !== 'loan' || withdrawalMode !== 'fixed') return;
       const target = parseFloat(targetUnusedVsPeakFinalInput.value);
       if (!isFinite(target)) return;
 
@@ -962,4 +999,5 @@
 </script>
 </body>
 </html>
+
 
