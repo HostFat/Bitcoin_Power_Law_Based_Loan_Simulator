@@ -14,14 +14,14 @@
     .chart-container { position: relative; width: 100%; height: 40vh; max-height: 500px; }
     @media (min-width: 768px) { .chart-container { height: 60vh; } }
     input[type="range"] { width: 100%; }
-    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #0d9488; cursor: pointer; border-radius: 50%; }
-    input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; background: #0d9488; cursor: pointer; border-radius: 50%; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #3b82f6; cursor: pointer; border-radius: 50%; }
+    input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; background: #3b82f6; cursor: pointer; border-radius: 50%; }
     .mode-button { padding: 0.5rem 1rem; border: 1px solid #cbd5e1; color: #64748b; cursor: pointer; transition: all 0.2s; }
-    .mode-button.active { background-color: #0d9488; color: white; border-color: #0d9488; font-weight: 600; }
+    .mode-button.active { background-color: #3b82f6; color: white; border-color: #3b82f6; font-weight: 600; }
     .number-input { width: 100%; }
     .row-red { background-color: #fee2e2; }
     .hidden { display: none; }
-    #powerLawInfoBox a { color: #0d9488; text-decoration: underline; }
+    #powerLawInfoBox a { color: #1d4ed8; text-decoration: underline; }
     #powerLawInfoBox ul { list-style: disc; padding-left: 1.25rem; }
   </style>
 </head>
@@ -30,7 +30,7 @@
   <div class="container mx-auto p-4 sm:p-6 lg:p-8">
     <header class="mb-8">
       <div class="text-center">
-        <h1 class="text-3xl md:text-4xl font-bold text-teal-800">Bitcoin Power Law Based Simulator</h1>
+        <h1 class="text-3xl md:text-4xl font-bold text-blue-800">Bitcoin Power Law Based Simulator</h1>
         <p class="mt-2 text-slate-600">An interactive tool to explore financial strategies based on a long-term Bitcoin growth model.</p>
       </div>
     </header>
@@ -70,7 +70,7 @@
               <label id="btcAmountLabel" for="btcAmount" class="block font-medium text-slate-600 cursor-pointer">BTC for Collateral</label>
               <div class="flex items-center space-x-2 mt-1">
                 <input type="number" id="btcAmount" value="1.00000000" step="0.00000001" min="0" max="1000000" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                <button type="button" id="calculateSafeCollateralBtn" class="px-3 py-2 bg-teal-600 text-white rounded-md shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 text-sm whitespace-nowrap">
+                <button type="button" id="calculateSafeCollateralBtn" class="px-3 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm whitespace-nowrap">
                   Calculate Safe BTC
                 </button>
               </div>
@@ -79,24 +79,24 @@
             <!-- Annual Inflation Rate shown always right after BTC -->
             <div>
               <label for="inflationRate" class="block font-medium text-slate-600">
-                Annual Inflation Rate: <span id="inflationRateValue" class="font-bold text-teal-700">7.0</span>%
+                Annual Inflation Rate: <span id="inflationRateValue" class="font-bold text-blue-700">7.0</span>%
               </label>
-              <input type="range" id="inflationRate" min="0" max="20" step="0.1" value="7" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600">
+              <input type="range" id="inflationRate" min="0" max="20" step="0.1" value="7" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-blue-500">
             </div>
 
             <div id="loanParams">
               <div class="space-y-6">
                 <div>
                   <label for="ltv" class="block font-medium text-slate-600">
-                    Loan-to-Value (LTV): <span id="ltvValue" class="font-bold text-teal-700">70</span>%
+                    Loan-to-Value (LTV): <span id="ltvValue" class="font-bold text-blue-700">70</span>%
                   </label>
-                  <input type="range" id="ltv" min="10" max="90" step="1" value="70" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600">
+                  <input type="range" id="ltv" min="10" max="90" step="1" value="70" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-blue-500">
                 </div>
                 <div>
                   <label for="interestRate" class="block font-medium text-slate-600">
-                    Annual Interest Rate: <span id="interestRateValue" class="font-bold text-teal-700">7.0</span>%
+                    Annual Interest Rate: <span id="interestRateValue" class="font-bold text-blue-700">7.0</span>%
                   </label>
-                  <input type="range" id="interestRate" min="0" max="20" step="0.5" value="7" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600">
+                  <input type="range" id="interestRate" min="0" max="20" step="0.5" value="7" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-blue-500">
                 </div>
 
                 <!-- Withdrawal Strategy Toggle -->
@@ -116,7 +116,7 @@
               <label for="annualWithdrawal" class="block font-medium text-slate-600">Annual Withdrawal ($)</label>
               <div class="flex items-center space-x-2 mt-1">
                 <input type="number" id="annualWithdrawal" value="10000" step="100" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                <button type="button" id="calculateSafeWithdrawalBtn" class="px-3 py-2 bg-teal-600 text-white rounded-md shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 text-sm whitespace-nowrap">Calculate Safe Amount</button>
+                <button type="button" id="calculateSafeWithdrawalBtn" class="px-3 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm whitespace-nowrap">Calculate Safe Amount</button>
               </div>
             </div>
 
@@ -125,10 +125,10 @@
               <div class="space-y-4">
                 <div>
                   <label for="safetyMargin" class="block font-medium text-slate-600">
-                    Safety Margin: <span id="safetyMarginValue" class="font-bold text-teal-700">5.0</span>%
+                    Safety Margin: <span id="safetyMarginValue" class="font-bold text-blue-700">5.0</span>%
                   </label>
                   <div class="flex items-center space-x-2 mt-1">
-                    <input type="range" id="safetyMargin" min="0" max="100" step="0.5" value="5" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600">
+                    <input type="range" id="safetyMargin" min="0" max="100" step="0.5" value="5" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-blue-500">
                     <button type="button" id="maximizeSafetyMarginBtn" class="px-3 py-2 bg-amber-600 text-white rounded-md shadow-sm hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 text-sm whitespace-nowrap text-center">
                       <div class="font-medium">Maximize</div>
                       <div class="text-xs opacity-80">Wait a little</div>
@@ -147,16 +147,16 @@
 
             <div>
               <label for="startYear" class="block font-medium text-slate-600">
-                Simulate From Year: <span id="startYearValue" class="font-bold text-teal-700">2025</span>
+                Simulate From Year: <span id="startYearValue" class="font-bold text-blue-700">2025</span>
               </label>
-              <input type="range" id="startYear" min="2025" max="2084" step="1" value="2025" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600">
+              <input type="range" id="startYear" min="2025" max="2084" step="1" value="2025" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-blue-500">
             </div>
 
             <div>
               <label for="endYear" class="block font-medium text-slate-600">
-                Simulate Until Year: <span id="endYearValue" class="font-bold text-teal-700">2085</span>
+                Simulate Until Year: <span id="endYearValue" class="font-bold text-blue-700">2085</span>
               </label>
-              <input type="range" id="endYear" min="2026" max="2085" step="1" value="2085" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600">
+              <input type="range" id="endYear" min="2026" max="2085" step="1" value="2085" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-blue-500">
             </div>
 
             <div id="targetContainer" class="mt-2">
@@ -206,56 +206,396 @@
   </div>
 
 <script>
-  // DOM
-  const modeLoanBtn = document.getElementById('modeLoan');
-  const modeSellBtn = document.getElementById('modeSell');
-  const modeFixedWithdrawalBtn = document.getElementById('modeFixedWithdrawal');
-  const modeOptimizedWithdrawalBtn = document.getElementById('modeOptimizedWithdrawal');
-  const btcAmountInput = document.getElementById('btcAmount');
-  const ltvInput = document.getElementById('ltv');
-  const interestRateInput = document.getElementById('interestRate');
-  const inflationRateInput = document.getElementById('inflationRate');
-  const annualWithdrawalInput = document.getElementById('annualWithdrawal');
-  const safetyMarginInput = document.getElementById('safetyMargin');
-  const minWithdrawalInput = document.getElementById('minWithdrawal');
-  const maximizeSafetyMarginBtn = document.getElementById('maximizeSafetyMarginBtn');
-  const startYearInput = document.getElementById('startYear');
-  const endYearInput = document.getElementById('endYear');
-  const startYearValueSpan = document.getElementById('startYearValue');
-  const endYearValueSpan = document.getElementById('endYearValue');
-  const ltvValueSpan = document.getElementById('ltvValue');
-  const interestRateValueSpan = document.getElementById('interestRateValue');
-  const inflationRateValueSpan = document.getElementById('inflationRateValue');
-  const safetyMarginValueSpan = document.getElementById('safetyMarginValue');
-  const resultsTableHeader = document.getElementById('resultsTableHeader');
-  const resultsTableBody = document.getElementById('resultsTableBody');
-  const targetContainer = document.getElementById('targetContainer');
-  const targetUnusedVsPeakFinalInput = document.getElementById('targetUnusedVsPeakFinal');
-  const targetDescriptionEl = document.getElementById('targetDescription');
-  const chartTitleEl = document.getElementById('chartTitle');
-  const tableTitleEl = document.getElementById('tableTitle');
-  const tableSubtitle = document.getElementById('tableSubtitle');
-  const btcAmountLabel = document.getElementById('btcAmountLabel');
-  const loanParams = document.getElementById('loanParams');
-  const fixedWithdrawalControls = document.getElementById('fixedWithdrawalControls');
-  const optimizedWithdrawalControls = document.getElementById('optimizedWithdrawalControls');
-  const ctx = document.getElementById('mainChart').getContext('2d');
+(function() {
+  'use strict';
+
+  // Constants
+  const GENESIS_DATE = new Date('2009-01-03');
+  const EPS = 1e-9;
+  const BINARY_SEARCH_ITERATIONS = 50; // Reduced from 80 for sufficient precision
+  const BINARY_SEARCH_PRECISION = 1e-6;
+
+  // DOM Elements Cache
+  const elements = {
+    modeLoanBtn: document.getElementById('modeLoan'),
+    modeSellBtn: document.getElementById('modeSell'),
+    modeFixedWithdrawalBtn: document.getElementById('modeFixedWithdrawal'),
+    modeOptimizedWithdrawalBtn: document.getElementById('modeOptimizedWithdrawal'),
+    btcAmountInput: document.getElementById('btcAmount'),
+    ltvInput: document.getElementById('ltv'),
+    interestRateInput: document.getElementById('interestRate'),
+    inflationRateInput: document.getElementById('inflationRate'),
+    annualWithdrawalInput: document.getElementById('annualWithdrawal'),
+    safetyMarginInput: document.getElementById('safetyMargin'),
+    minWithdrawalInput: document.getElementById('minWithdrawal'),
+    maximizeSafetyMarginBtn: document.getElementById('maximizeSafetyMarginBtn'),
+    startYearInput: document.getElementById('startYear'),
+    endYearInput: document.getElementById('endYear'),
+    startYearValueSpan: document.getElementById('startYearValue'),
+    endYearValueSpan: document.getElementById('endYearValue'),
+    ltvValueSpan: document.getElementById('ltvValue'),
+    interestRateValueSpan: document.getElementById('interestRateValue'),
+    inflationRateValueSpan: document.getElementById('inflationRateValue'),
+    safetyMarginValueSpan: document.getElementById('safetyMarginValue'),
+    resultsTableHeader: document.getElementById('resultsTableHeader'),
+    resultsTableBody: document.getElementById('resultsTableBody'),
+    targetContainer: document.getElementById('targetContainer'),
+    targetUnusedVsPeakFinalInput: document.getElementById('targetUnusedVsPeakFinal'),
+    targetDescriptionEl: document.getElementById('targetDescription'),
+    chartTitleEl: document.getElementById('chartTitle'),
+    tableTitleEl: document.getElementById('tableTitle'),
+    tableSubtitle: document.getElementById('tableSubtitle'),
+    btcAmountLabel: document.getElementById('btcAmountLabel'),
+    loanParams: document.getElementById('loanParams'),
+    fixedWithdrawalControls: document.getElementById('fixedWithdrawalControls'),
+    optimizedWithdrawalControls: document.getElementById('optimizedWithdrawalControls'),
+    calculateSafeCollateralBtn: document.getElementById('calculateSafeCollateralBtn'),
+    calculateSafeWithdrawalBtn: document.getElementById('calculateSafeWithdrawalBtn'),
+    mainChartCtx: document.getElementById('mainChart').getContext('2d')
+  };
 
   // State
-  const GENESIS_DATE = new Date('2009-01-03');
   let mainChart;
   let simulationMode = 'loan';
   let withdrawalMode = 'fixed'; // 'fixed' or 'optimized'
+  const priceCache = {}; // Memoization for powerLawPrice
 
   // Utils
-  function formatCurrency(value) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value); }
-  function formatBTC(value) { return (isFinite(value) ? value : 0).toFixed(8) + ' BTC'; }
-  function formatBTCPlain(value) { return (isFinite(value) ? value : 0).toFixed(8); }
-  function powerLawPrice(days) { return (1.0117e-17 * Math.pow(days, 5.82)) * 0.42; }
+  const formatCurrency = (value) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+  const formatBTC = (value) => (isFinite(value) ? value.toFixed(8) : '0') + ' BTC';
+  const formatBTCPlain = (value) => (isFinite(value) ? value.toFixed(8) : '0');
 
-  function initializeChart() {
+  const powerLawPrice = (days) => {
+    if (priceCache[days] !== undefined) return priceCache[days];
+    const price = (1.0117e-17 * Math.pow(days, 5.82)) * 0.42;
+    priceCache[days] = price;
+    return price;
+  };
+
+  const binarySearchMinSafe = (low, high, checkUnsafeFn) => {
+    let best = high;
+    for (let k = 0; k < BINARY_SEARCH_ITERATIONS; k++) {
+      const mid = (low + high) / 2;
+      if (!checkUnsafeFn(mid)) { // safe
+        best = mid;
+        high = mid;
+      } else { // unsafe
+        low = mid;
+      }
+    }
+    return best;
+  };
+
+  const binarySearchMaxSafe = (low, high, checkUnsafeFn) => {
+    let best = low;
+    for (let k = 0; k < BINARY_SEARCH_ITERATIONS; k++) {
+      const mid = (low + high) / 2;
+      if (!checkUnsafeFn(mid)) { // safe
+        best = mid;
+        low = mid;
+      } else { // unsafe
+        high = mid;
+      }
+    }
+    return best;
+  };
+
+  const getDaysSinceGenesis = (year) => {
+    const date = new Date(year, 0, 1);
+    return Math.floor((date - GENESIS_DATE) / 86400000);
+  };
+
+  const precomputePrices = (startYear, simulationYears) => {
+    const prices = [];
+    for (let i = 0; i <= simulationYears; i++) {
+      const days = getDaysSinceGenesis(startYear + i);
+      prices.push(powerLawPrice(days));
+    }
+    return prices;
+  };
+
+  // Core Computations
+  const computeLoanRows = (btcAmount, startYear, simulationYears) => {
+    const ltvFrac = Math.max(0, parseInt(elements.ltvInput.value) || 0) / 100;
+    if (ltvFrac === 0) return Array(simulationYears + 1).fill({}).map((_, i) => ({ i, year: startYear + i, supportPrice: 0, totalDebt: 0, interestForYear: 0, requiredBtcCollateral: 0, maxLoanPossible: 0, baseWithdrawal: 0, adjustedWithdrawal: 0 }));
+
+    const interestRate = Math.max(0, parseFloat(elements.interestRateInput.value) || 0) / 100;
+    const inflationRate = Math.max(0, parseFloat(elements.inflationRateInput.value) || 0) / 100;
+    const prices = precomputePrices(startYear, simulationYears);
+
+    let withdrawals;
+    if (withdrawalMode === 'optimized') {
+      withdrawals = calculateOptimizedWithdrawals(btcAmount, startYear, simulationYears, prices);
+    } else {
+      const fixedAmount = Math.max(0, parseFloat(elements.annualWithdrawalInput.value) || 0);
+      withdrawals = Array(simulationYears + 1).fill(fixedAmount);
+    }
+
+    let totalDebt = 0;
+    const rows = [];
+    for (let i = 0; i <= simulationYears; i++) {
+      const supportPrice = prices[i];
+      const baseWithdrawal = withdrawals[i];
+      const adjustedWithdrawal = baseWithdrawal * Math.pow(1 + inflationRate, i);
+      const debtBeforeInterest = totalDebt + adjustedWithdrawal;
+      const interestForYear = debtBeforeInterest * interestRate;
+      totalDebt = debtBeforeInterest + interestForYear;
+
+      const requiredBtcCollateral = supportPrice > 0 ? (totalDebt / (supportPrice * ltvFrac)) : 0;
+      const maxLoanPossible = supportPrice * btcAmount * ltvFrac;
+
+      rows.push({
+        i,
+        year: startYear + i,
+        supportPrice,
+        totalDebt,
+        interestForYear,
+        requiredBtcCollateral,
+        maxLoanPossible,
+        baseWithdrawal,
+        adjustedWithdrawal
+      });
+    }
+    return rows;
+  };
+
+  const computeSellRows = (btcAmount, startYear, simulationYears) => {
+    const inflationRate = Math.max(0, parseFloat(elements.inflationRateInput.value) || 0) / 100;
+    const initialAnnualWithdrawal = Math.max(0, parseFloat(elements.annualWithdrawalInput.value) || 0);
+    const prices = precomputePrices(startYear, simulationYears);
+
+    let remainingBtc = btcAmount;
+    const rows = [];
+    for (let i = 0; i <= simulationYears; i++) {
+      const supportPrice = prices[i];
+      const usdToWithdraw = initialAnnualWithdrawal * Math.pow(1 + inflationRate, i);
+      const btcNeeded = supportPrice > 0 ? (usdToWithdraw / supportPrice) : Infinity;
+
+      let btcSold = 0;
+      let depleted = false;
+      if (remainingBtc >= btcNeeded) {
+        btcSold = btcNeeded;
+        remainingBtc -= btcSold;
+      } else {
+        btcSold = remainingBtc;
+        remainingBtc = 0;
+        depleted = true;
+      }
+
+      rows.push({
+        i,
+        year: startYear + i,
+        supportPrice,
+        usdToWithdraw,
+        btcSold,
+        remainingBtc,
+        depleted
+      });
+    }
+    return rows;
+  };
+
+  // Optimized Computations
+  const calculateOptimizedWithdrawals = (btcAmount, startYear, simulationYears, prices, safetyMarginOverride = null, minWithdrawalOverride = null) => {
+    const ltvFrac = Math.max(0, parseInt(elements.ltvInput.value) || 0) / 100;
+    if (ltvFrac === 0) return Array(simulationYears + 1).fill(0);
+
+    const interestRate = Math.max(0, parseFloat(elements.interestRateInput.value) || 0) / 100;
+    const inflationRate = Math.max(0, parseFloat(elements.inflationRateInput.value) || 0) / 100;
+    const safetyMargin = safetyMarginOverride ?? (parseFloat(elements.safetyMarginInput.value) || 0);
+    const minWithdrawal = minWithdrawalOverride ?? (parseFloat(elements.minWithdrawalInput.value) || 0);
+    const safetyFactor = (100 - safetyMargin) / 100;
+
+    const withdrawals = [];
+    let totalDebt = 0;
+
+    for (let currentYear = 0; currentYear <= simulationYears; currentYear++) {
+      let maxWithdrawal = binarySearchMaxSafe(0, 1e7, (testWithdrawal) => {
+        let testDebt = totalDebt;
+        let wouldLiquidate = false;
+
+        for (let futureYear = currentYear; futureYear <= simulationYears; futureYear++) {
+          const price = prices[futureYear];
+          const maxCapacity = price * btcAmount * ltvFrac;
+
+          const withdrawal = (futureYear === currentYear) ? testWithdrawal : (withdrawals[futureYear] ?? testWithdrawal);
+          const adjustedWithdrawal = withdrawal * Math.pow(1 + inflationRate, futureYear);
+          testDebt += adjustedWithdrawal;
+          testDebt *= (1 + interestRate);
+
+          if (testDebt > maxCapacity + EPS) {
+            wouldLiquidate = true;
+            break;
+          }
+        }
+        return wouldLiquidate;
+      });
+
+      let safeWithdrawal = maxWithdrawal * safetyFactor;
+      safeWithdrawal = Math.max(safeWithdrawal, minWithdrawal);
+      withdrawals[currentYear] = safeWithdrawal;
+
+      const adjustedWithdrawal = safeWithdrawal * Math.pow(1 + inflationRate, currentYear);
+      totalDebt += adjustedWithdrawal;
+      totalDebt *= (1 + interestRate);
+    }
+
+    return withdrawals;
+  };
+
+  // Check Functions
+  const runLoanUnsafeCheck = (btcAmount, annualWithdrawal, startYear, simulationYears) => {
+    const ltvFrac = Math.max(0, parseInt(elements.ltvInput.value) || 0) / 100;
+    if (ltvFrac === 0 || btcAmount <= 0 || annualWithdrawal <= 0) return false;
+
+    const interestRate = Math.max(0, parseFloat(elements.interestRateInput.value) || 0) / 100;
+    const inflationRate = Math.max(0, parseFloat(elements.inflationRateInput.value) || 0) / 100;
+    const prices = precomputePrices(startYear, simulationYears);
+
+    let totalDebt = 0;
+    for (let i = 0; i <= simulationYears; i++) {
+      const price = prices[i];
+      const maxLoanPossible = price * btcAmount * ltvFrac;
+      const withdrawal = annualWithdrawal * Math.pow(1 + inflationRate, i);
+      totalDebt += withdrawal;
+      totalDebt *= (1 + interestRate);
+      if (totalDebt > maxLoanPossible + EPS) return true;
+    }
+    return false;
+  };
+
+  const runSellDepleted = (btcAmount, annualWithdrawal, startYear, simulationYears) => {
+    if (btcAmount <= 0 || annualWithdrawal <= 0) return false;
+
+    const inflationRate = Math.max(0, parseFloat(elements.inflationRateInput.value) || 0) / 100;
+    const prices = precomputePrices(startYear, simulationYears);
+
+    let remainingBtc = btcAmount;
+    for (let i = 0; i <= simulationYears; i++) {
+      const price = prices[i];
+      if (price <= 0) return true;
+      const usd = annualWithdrawal * Math.pow(1 + inflationRate, i);
+      const btcNeed = usd / price;
+      if (remainingBtc < btcNeed - 1e-12) return true;
+      remainingBtc -= btcNeed;
+    }
+    return false;
+  };
+
+  const runOptimizedLoanUnsafeCheck = (btcAmount, startYear, simulationYears) => {
+    const ltvFrac = Math.max(0, parseInt(elements.ltvInput.value) || 0) / 100;
+    if (ltvFrac === 0 || btcAmount <= 0) return false;
+
+    const prices = precomputePrices(startYear, simulationYears);
+    const withdrawals = calculateOptimizedWithdrawals(btcAmount, startYear, simulationYears, prices);
+
+    let totalDebt = 0;
+    const interestRate = Math.max(0, parseFloat(elements.interestRateInput.value) || 0) / 100;
+    const inflationRate = Math.max(0, parseFloat(elements.inflationRateInput.value) || 0) / 100;
+
+    for (let i = 0; i <= simulationYears; i++) {
+      const adjustedWithdrawal = withdrawals[i] * Math.pow(1 + inflationRate, i);
+      totalDebt += adjustedWithdrawal;
+      totalDebt *= (1 + interestRate);
+
+      const price = prices[i];
+      const maxLoanPossible = price * btcAmount * ltvFrac;
+      if (totalDebt > maxLoanPossible + EPS) return true;
+    }
+    return false;
+  };
+
+  // Auto Calculators
+  const calculateSafeCollateral = () => {
+    const startYear = parseInt(elements.startYearInput.value);
+    const simulationYears = parseInt(elements.endYearInput.value) - startYear;
+    const annualWithdrawal = Math.max(0, parseFloat(elements.annualWithdrawalInput.value) || 0);
+    if (annualWithdrawal <= 0) {
+      updateSimulation();
+      return;
+    }
+
+    const best = binarySearchMinSafe(0, 1e6, (mid) => runLoanUnsafeCheck(mid, annualWithdrawal, startYear, simulationYears));
+    elements.btcAmountInput.value = (Math.ceil(best * 1e8) / 1e8).toFixed(8);
+    updateSimulation();
+  };
+
+  const calculateSafeCollateralOptimized = () => {
+    const startYear = parseInt(elements.startYearInput.value);
+    const simulationYears = parseInt(elements.endYearInput.value) - startYear;
+
+    const best = binarySearchMinSafe(0, 1e6, (mid) => runOptimizedLoanUnsafeCheck(mid, startYear, simulationYears));
+    elements.btcAmountInput.value = (Math.ceil(best * 1e8) / 1e8).toFixed(8);
+    updateSimulation();
+  };
+
+  const autoCalcBtcForSell = () => {
+    const startYear = parseInt(elements.startYearInput.value);
+    const simulationYears = parseInt(elements.endYearInput.value) - startYear;
+    const annualWithdrawal = Math.max(0, parseFloat(elements.annualWithdrawalInput.value) || 0);
+    if (annualWithdrawal <= 0) {
+      updateSimulation();
+      return;
+    }
+
+    const best = binarySearchMinSafe(0, 1e6, (mid) => runSellDepleted(mid, annualWithdrawal, startYear, simulationYears));
+    elements.btcAmountInput.value = (Math.ceil(best * 1e8) / 1e8).toFixed(8);
+    updateSimulation();
+  };
+
+  const calculateSafeWithdrawal = () => {
+    const startYear = parseInt(elements.startYearInput.value);
+    const simulationYears = parseInt(elements.endYearInput.value) - startYear;
+    const btc = Math.max(0, parseFloat(elements.btcAmountInput.value) || 0);
+    if (btc <= 0) return;
+
+    const checkUnsafeFn = (mid) => {
+      if (simulationMode === 'loan') {
+        return runLoanUnsafeCheck(btc, mid, startYear, simulationYears);
+      } else {
+        return runSellDepleted(btc, mid, startYear, simulationYears);
+      }
+    };
+
+    const safe = binarySearchMaxSafe(0, 1e7, checkUnsafeFn);
+    elements.annualWithdrawalInput.value = Math.floor(safe);
+    updateSimulation();
+  };
+
+  const maximizeSafetyMargin = () => {
+    if (simulationMode !== 'loan' || withdrawalMode !== 'optimized') return;
+
+    const btcAmount = Math.max(0, parseFloat(elements.btcAmountInput.value) || 0);
+    const startYear = parseInt(elements.startYearInput.value);
+    const simulationYears = parseInt(elements.endYearInput.value) - startYear;
+    if (btcAmount <= 0) return;
+
+    const prices = precomputePrices(startYear, simulationYears);
+    const inflationRate = Math.max(0, parseFloat(elements.inflationRateInput.value) || 0) / 100;
+
+    let bestMargin = 0;
+    let maxExtracted = 0;
+    for (let margin = 0; margin <= 100; margin += 0.5) {
+      const withdrawals = calculateOptimizedWithdrawals(btcAmount, startYear, simulationYears, prices, margin);
+      let totalExtracted = 0;
+      for (let i = 0; i <= simulationYears; i++) {
+        totalExtracted += withdrawals[i] * Math.pow(1 + inflationRate, i);
+      }
+      if (totalExtracted > maxExtracted) {
+        maxExtracted = totalExtracted;
+        bestMargin = margin;
+      }
+    }
+
+    elements.safetyMarginInput.value = bestMargin;
+    elements.safetyMarginValueSpan.textContent = bestMargin.toFixed(1);
+    updateSimulation();
+  };
+
+  // Rendering
+  const initializeChart = () => {
     if (mainChart) mainChart.destroy();
-    mainChart = new Chart(ctx, {
+    mainChart = new Chart(elements.mainChartCtx, {
       type: 'line',
       data: { labels: [], datasets: [] },
       options: {
@@ -266,351 +606,46 @@
         plugins: { tooltip: { callbacks: {} } }
       }
     });
-  }
+  };
 
-  // Button label updater for Calculate Safe BTC
-  function updateCalculateSafeBtcButtonLabel() {
-    const btn = document.getElementById('calculateSafeCollateralBtn');
-    if (!btn) return;
-
+  const updateCalculateSafeBtcButtonLabel = () => {
     if (simulationMode === 'loan' && withdrawalMode === 'optimized') {
-      btn.innerHTML = `
+      elements.calculateSafeCollateralBtn.innerHTML = `
         <div class="leading-tight text-center">
           <div class="font-medium">Calculate Safe BTC</div>
           <div class="text-xs opacity-80">Wait a little</div>
         </div>
       `;
     } else {
-      btn.textContent = 'Calculate Safe BTC';
+      elements.calculateSafeCollateralBtn.textContent = 'Calculate Safe BTC';
     }
-  }
+  };
 
-  // Core checks
-  function runLoanUnsafeCheck(btcAmount, annualWithdrawal, startYear, simulationYears) {
-    const ltvFrac = (parseInt(ltvInput.value) || 0) / 100;
-    const interestRate = parseFloat(interestRateInput.value) || 0;
-    const inflationRate = parseFloat(inflationRateInput.value) || 0;
-    const EPS = 1e-9;
-
-    let totalDebt = 0;
-    for (let i = 0; i <= simulationYears; i++) {
-      const date = new Date(startYear + i, 0, 1);
-      const days = Math.floor((date - GENESIS_DATE) / 86400000);
-      const price = powerLawPrice(days);
-      const maxLoanPossible = price * btcAmount * ltvFrac;
-      const withdrawal = annualWithdrawal * Math.pow(1 + (inflationRate / 100), i);
-      totalDebt += withdrawal;
-      totalDebt *= (1 + interestRate / 100);
-      if (totalDebt - maxLoanPossible > EPS) return true;
-    }
-    return false;
-  }
-
-  function runSellDepleted(btcAmount, annualWithdrawal, startYear, simulationYears) {
-    const inflationRate = parseFloat(inflationRateInput.value) || 0;
-    let remainingBtc = btcAmount;
-    for (let i = 0; i <= simulationYears; i++) {
-      const date = new Date(startYear + i, 0, 1);
-      const days = Math.floor((date - GENESIS_DATE) / 86400000);
-      const price = powerLawPrice(days);
-      const usd = annualWithdrawal * Math.pow(1 + (inflationRate / 100), i);
-      const btcNeed = usd / price;
-      if (remainingBtc < btcNeed - 1e-12) return true;
-      remainingBtc -= btcNeed;
-    }
-    return false;
-  }
-
-  // Optimized unsafe check (for safe collateral in optimized)
-  function runOptimizedLoanUnsafeCheck(btcAmount, startYear, simulationYears) {
-    try {
-      const ltvFrac = (parseInt(ltvInput.value) || 0) / 100;
-      const interestRate = parseFloat(interestRateInput.value) || 0;
-      const inflationRate = parseFloat(inflationRateInput.value) || 0;
-      const safetyMargin = parseFloat(safetyMarginInput.value) || 0;
-      const minWithdrawal = parseFloat(minWithdrawalInput.value) || 0;
-      const safetyFactor = (100 - safetyMargin) / 100;
-      const EPS = 1e-9;
-
-      const withdrawals = [];
-      let totalDebt = 0;
-
-      for (let currentYear = 0; currentYear <= simulationYears; currentYear++) {
-        // Binary search maximum withdrawal this year
-        let maxWithdrawal = 0;
-        let low = 0, high = 1e7;
-
-        for (let iter = 0; iter < 50; iter++) {
-          const testWithdrawal = (low + high) / 2;
-          let testDebt = totalDebt;
-          let wouldLiquidate = false;
-
-          for (let futureYear = currentYear; futureYear <= simulationYears; futureYear++) {
-            const date = new Date(startYear + futureYear, 0, 1);
-            const days = Math.floor((date - GENESIS_DATE) / 86400000);
-            const price = powerLawPrice(days);
-            const maxCapacity = price * btcAmount * ltvFrac;
-
-            const withdrawal = (futureYear === currentYear)
-              ? testWithdrawal
-              : (withdrawals[futureYear] || testWithdrawal);
-
-            const adjustedWithdrawal = withdrawal * Math.pow(1 + (inflationRate / 100), futureYear);
-            testDebt += adjustedWithdrawal;
-            testDebt *= (1 + interestRate / 100);
-
-            if (testDebt > maxCapacity + EPS) { wouldLiquidate = true; break; }
-          }
-
-          if (wouldLiquidate) { high = testWithdrawal; } else { maxWithdrawal = testWithdrawal; low = testWithdrawal; }
-        }
-
-        let safeWithdrawal = maxWithdrawal * safetyFactor;
-        safeWithdrawal = Math.max(safeWithdrawal, minWithdrawal);
-        withdrawals[currentYear] = safeWithdrawal;
-
-        const adjustedWithdrawal = safeWithdrawal * Math.pow(1 + (inflationRate / 100), currentYear);
-        totalDebt += adjustedWithdrawal;
-        totalDebt *= (1 + interestRate / 100);
-
-        const date = new Date(startYear + currentYear, 0, 1);
-        const days = Math.floor((date - GENESIS_DATE) / 86400000);
-        const price = powerLawPrice(days);
-        const maxLoanPossible = price * btcAmount * ltvFrac;
-        if (totalDebt > maxLoanPossible + EPS) return true;
+  const buildLoanTableRows = (rows, simulationYears, withdrawalMode) => {
+    let globalPeak = 0;
+    let firstPeakIndex = -1;
+    rows.forEach((r, index) => {
+      if (r.requiredBtcCollateral > globalPeak + EPS) {
+        globalPeak = r.requiredBtcCollateral;
+        firstPeakIndex = index;
       }
+    });
+    if (firstPeakIndex === -1) firstPeakIndex = simulationYears;
 
-      return false;
-    } catch {
-      return true;
-    }
-  }
-
-  // Optimized withdrawal calculator
-  function calculateOptimizedWithdrawals(btcAmount, startYear, simulationYears, safetyMarginOverride = null, minWithdrawalOverride = null) {
-    const ltvFrac = (parseInt(ltvInput.value) || 0) / 100;
-    const interestRate = parseFloat(interestRateInput.value) || 0;
-    const inflationRate = parseFloat(inflationRateInput.value) || 0;
-    const safetyMargin = safetyMarginOverride !== null ? safetyMarginOverride : (parseFloat(safetyMarginInput.value) || 0);
-    const minWithdrawal = minWithdrawalOverride !== null ? minWithdrawalOverride : (parseFloat(minWithdrawalInput.value) || 0);
-    const safetyFactor = (100 - safetyMargin) / 100;
-
-    const withdrawals = [];
-    let totalDebt = 0;
-
-    for (let currentYear = 0; currentYear <= simulationYears; currentYear++) {
-      let maxWithdrawal = 0;
-      let low = 0, high = 1e7;
-
-      for (let iter = 0; iter < 50; iter++) {
-        const testWithdrawal = (low + high) / 2;
-        let testDebt = totalDebt;
-        let wouldLiquidate = false;
-
-        for (let futureYear = currentYear; futureYear <= simulationYears; futureYear++) {
-          const date = new Date(startYear + futureYear, 0, 1);
-          const days = Math.floor((date - GENESIS_DATE) / 86400000);
-          const price = powerLawPrice(days);
-          const maxCapacity = price * btcAmount * ltvFrac;
-
-          const withdrawal = (futureYear === currentYear) ? testWithdrawal : (withdrawals[futureYear] || testWithdrawal);
-          const adjustedWithdrawal = withdrawal * Math.pow(1 + (inflationRate / 100), futureYear);
-          testDebt += adjustedWithdrawal;
-          testDebt *= (1 + interestRate / 100);
-
-          if (testDebt > maxCapacity + 1e-9) { wouldLiquidate = true; break; }
-        }
-
-        if (wouldLiquidate) high = testWithdrawal; else { maxWithdrawal = testWithdrawal; low = testWithdrawal; }
-      }
-
-      let safeWithdrawal = maxWithdrawal * safetyFactor;
-      safeWithdrawal = Math.max(safeWithdrawal, minWithdrawal);
-      withdrawals[currentYear] = safeWithdrawal;
-
-      const adjustedWithdrawal = safeWithdrawal * Math.pow(1 + (inflationRate / 100), currentYear);
-      totalDebt += adjustedWithdrawal;
-      totalDebt *= (1 + interestRate / 100);
-    }
-
-    return withdrawals;
-  }
-
-  function calculateTotalExtracted(btcAmount, startYear, simulationYears, safetyMargin) {
-    const inflationRate = parseFloat(inflationRateInput.value) || 0;
-    try {
-      const withdrawals = calculateOptimizedWithdrawals(btcAmount, startYear, simulationYears, safetyMargin);
-      let totalExtracted = 0;
-      for (let i = 0; i <= simulationYears; i++) {
-        const adjustedWithdrawal = withdrawals[i] * Math.pow(1 + (inflationRate / 100), i);
-        totalExtracted += adjustedWithdrawal;
-      }
-      return totalExtracted;
-    } catch {
-      return 0;
-    }
-  }
-
-  function maximizeSafetyMargin() {
-    if (simulationMode !== 'loan' || withdrawalMode !== 'optimized') return;
-
-    const btcAmount = parseFloat(btcAmountInput.value) || 0;
-    const startYear = parseInt(startYearInput.value);
-    const endYear = parseInt(endYearInput.value);
-    const years = endYear - startYear;
-    if (btcAmount <= 0) return;
-
-    let bestMargin = 0;
-    let maxExtracted = 0;
-    for (let margin = 0; margin <= 100; margin += 0.5) {
-      const totalExtracted = calculateTotalExtracted(btcAmount, startYear, years, margin);
-      if (totalExtracted > maxExtracted) { maxExtracted = totalExtracted; bestMargin = margin; }
-    }
-
-    safetyMarginInput.value = bestMargin;
-    safetyMarginValueSpan.textContent = bestMargin.toFixed(1);
-    updateSimulation();
-  }
-
-  // Rows computation
-  function computeLoanRows(btcAmount, startYear, simulationYears) {
-    const ltvFrac = (parseInt(ltvInput.value) || 0) / 100;
-    const interestRate = parseFloat(interestRateInput.value) || 0;
-    const inflationRate = parseFloat(inflationRateInput.value) || 0;
-
-    let totalDebt = 0;
-    const rows = [];
-
-    let withdrawals;
-    if (withdrawalMode === 'optimized') {
-      withdrawals = calculateOptimizedWithdrawals(btcAmount, startYear, simulationYears);
-    } else {
-      const fixedAmount = parseFloat(annualWithdrawalInput.value) || 0;
-      withdrawals = Array(simulationYears + 1).fill(fixedAmount);
-    }
-
-    for (let i = 0; i <= simulationYears; i++) {
-      const year = startYear + i;
-      const date = new Date(year, 0, 1);
-      const days = Math.floor((date - GENESIS_DATE) / 86400000);
-      const supportPrice = powerLawPrice(days);
-
-      const baseWithdrawal = withdrawals[i];
-      const adjustedWithdrawal = baseWithdrawal * Math.pow(1 + (inflationRate / 100), i);
-      const debtBeforeInterest = totalDebt + adjustedWithdrawal;
-      const interestForYear = debtBeforeInterest * (interestRate / 100);
-      totalDebt = debtBeforeInterest + interestForYear;
-
-      const requiredBtcCollateral = (supportPrice > 0 && ltvFrac > 0) ? (totalDebt / (supportPrice * ltvFrac)) : 0;
-      const maxLoanPossible = supportPrice * btcAmount * ltvFrac;
-
-      rows.push({ i, year, supportPrice, totalDebt, interestForYear, requiredBtcCollateral, maxLoanPossible, baseWithdrawal, adjustedWithdrawal });
-    }
-    return rows;
-  }
-
-  function computeSellRows(btcAmount, startYear, simulationYears) {
-    const inflationRate = parseFloat(inflationRateInput.value) || 0;
-    const initialAnnualWithdrawal = parseFloat(annualWithdrawalInput.value) || 0;
-
-    let remainingBtc = btcAmount;
-    const rows = [];
-    for (let i = 0; i <= simulationYears; i++) {
-      const year = startYear + i;
-      const date = new Date(year, 0, 1);
-      const days = Math.floor((date - GENESIS_DATE) / 86400000);
-      const supportPrice = powerLawPrice(days);
-      const usdToWithdraw = initialAnnualWithdrawal * Math.pow(1 + (inflationRate / 100), i);
-      const btcNeeded = supportPrice > 0 ? (usdToWithdraw / supportPrice) : Infinity;
-
-      let btcSold = 0;
-      let depleted = false;
-      if (remainingBtc >= btcNeeded) { btcSold = btcNeeded; remainingBtc -= btcSold; }
-      else { btcSold = remainingBtc; remainingBtc = 0; depleted = true; }
-
-      rows.push({ i, year, supportPrice, usdToWithdraw, btcSold, remainingBtc, depleted });
-    }
-    return rows;
-  }
-
-  // Rendering
-  function updateSimulation() {
-    initializeChart();
-
-    const btcAmount = parseFloat(btcAmountInput.value) || 0;
-    const startYear = parseInt(startYearInput.value);
-    const endYear = parseInt(endYearInput.value);
-    const years = endYear - startYear;
-
-    resultsTableBody.innerHTML = '';
-
-    if (simulationMode === 'loan') renderLoan(btcAmount, startYear, years);
-    else renderSell(btcAmount, startYear, years);
-
-    updateCalculateSafeBtcButtonLabel();
-    mainChart.update();
-  }
-
-  function renderLoan(btcAmount, startYear, years) {
-    loanParams.classList.remove('hidden');
-    targetContainer.classList.remove('hidden');  // Always show target field
-    chartTitleEl.textContent = 'Debt vs. Capacity Projection';
-    tableTitleEl.textContent = 'Loan Calculation Details';
-    btcAmountLabel.textContent = 'BTC for Collateral';
-    modeLoanBtn.classList.add('active');
-    modeSellBtn.classList.remove('active');
-
-    if (withdrawalMode === 'optimized') {
-      fixedWithdrawalControls.classList.add('hidden');
-      optimizedWithdrawalControls.classList.remove('hidden');
-    } else {
-      fixedWithdrawalControls.classList.remove('hidden');
-      optimizedWithdrawalControls.classList.add('hidden');
-    }
-
-    const withdrawalHeader = withdrawalMode === 'optimized' ? 'Optimized Withdrawal ($)' : 'Annual Withdrawal ($)';
-
-    resultsTableHeader.innerHTML = `
-      <tr>
-        <th class="px-6 py-3">Year</th>
-        <th class="px-6 py-3">Support Price ($)</th>
-        <th class="px-6 py-3">Maximum Possible Loan ($)</th>
-        <th class="px-6 py-3">${withdrawalHeader}</th>
-        <th class="px-6 py-3">Total Debt ($)</th>
-        <th class="px-6 py-3">Annual Interest ($)</th>
-        <th class="px-6 py-3">Required BTC Collateral</th>
-        <th class="px-6 py-3">Unused BTC vs Peak</th>
-        <th class="px-6 py-3">Additional Collateral Required (BTC)</th>
-      </tr>`;
-
-    const rows = computeLoanRows(btcAmount, startYear, years);
-
-    let globalPeak = 0, firstPeakIndex = -1;
-    rows.forEach(r => { if (r.requiredBtcCollateral > globalPeak + 1e-18) { globalPeak = r.requiredBtcCollateral; firstPeakIndex = r.i; } });
-    if (firstPeakIndex === -1) firstPeakIndex = rows.length - 1;
-
-    let progressivePeak = 0;
     let liquidationOccurred = false;
     let totalExtracted = 0;
+    const tableRows = [];
 
-    const labels = [], priceData = [], maxLoanData = [], totalDebtData = [];
-
-    rows.forEach(r => {
-      const { i, year, supportPrice, totalDebt, interestForYear, requiredBtcCollateral, maxLoanPossible, adjustedWithdrawal } = r;
-
-      const isLiquidated = totalDebt > maxLoanPossible + 1e-9;
+    rows.forEach((r, i) => {
+      const isLiquidated = r.totalDebt > r.maxLoanPossible + EPS;
       if (isLiquidated) liquidationOccurred = true;
-      
-      // Only count withdrawals until liquidation occurs
+
       if (!liquidationOccurred) {
-        totalExtracted += adjustedWithdrawal;
+        totalExtracted += r.adjustedWithdrawal;
       }
-      
-      if (r.requiredBtcCollateral > progressivePeak) progressivePeak = r.requiredBtcCollateral;
 
       let unusedSigned;
       if (i < firstPeakIndex) {
-        // Before peak: show difference between current required and global peak (negative)
         unusedSigned = r.requiredBtcCollateral - globalPeak;
       } else if (i === firstPeakIndex) {
         unusedSigned = 0;
@@ -618,62 +653,81 @@
         unusedSigned = Math.max(0, globalPeak - r.requiredBtcCollateral);
       }
 
-      labels.push(year);
-      priceData.push(supportPrice);
-      maxLoanData.push(maxLoanPossible);
-      totalDebtData.push(totalDebt);
-
       const rowClass = liquidationOccurred ? 'row-red' : 'bg-white';
       const textColorClass = liquidationOccurred ? 'text-red-600' : 'text-slate-800';
       const colorUnused = unusedSigned < 0 ? 'text-red-600' : (unusedSigned > 0 ? 'text-emerald-700' : '');
-      const ltvFrac = (parseInt(ltvInput.value) || 0) / 100 || 1;
-      const addBtc = isLiquidated ? (totalDebt - maxLoanPossible) / (supportPrice * ltvFrac) : 0;
+      const ltvFrac = parseInt(elements.ltvInput.value) / 100 || 1;
+      const addBtc = isLiquidated ? (r.totalDebt - r.maxLoanPossible) / (r.supportPrice * ltvFrac) : 0;
 
       const withdrawalClass = withdrawalMode === 'optimized' ? 'bg-blue-50' : '';
 
-      resultsTableBody.innerHTML += `
+      tableRows.push(`
         <tr class="${rowClass} border-b hover:bg-stone-50">
-          <td class="px-6 py-4 font-medium ${liquidationOccurred ? 'text-red-700' : 'text-slate-900'}">${year}</td>
-          <td class="px-6 py-4">${formatCurrency(supportPrice)}</td>
-          <td class="px-6 py-4">${formatCurrency(maxLoanPossible)}</td>
-          <td class="px-6 py-4 ${withdrawalClass} font-medium">${formatCurrency(adjustedWithdrawal)}</td>
-          <td class="px-6 py-4 font-bold ${textColorClass}">${formatCurrency(totalDebt)}</td>
-          <td class="px-6 py-4">${formatCurrency(interestForYear)}</td>
+          <td class="px-6 py-4 font-medium ${liquidationOccurred ? 'text-red-700' : 'text-slate-900'}">${r.year}</td>
+          <td class="px-6 py-4">${formatCurrency(r.supportPrice)}</td>
+          <td class="px-6 py-4">${formatCurrency(r.maxLoanPossible)}</td>
+          <td class="px-6 py-4 ${withdrawalClass} font-medium">${formatCurrency(r.adjustedWithdrawal)}</td>
+          <td class="px-6 py-4 font-bold ${textColorClass}">${formatCurrency(r.totalDebt)}</td>
+          <td class="px-6 py-4">${formatCurrency(r.interestForYear)}</td>
           <td class="px-6 py-4">${formatBTC(r.requiredBtcCollateral)}</td>
           <td class="px-6 py-4 ${colorUnused}">${unusedSigned < 0 ? '-' : (unusedSigned > 0 ? '+' : '')}${formatBTCPlain(Math.abs(unusedSigned))} BTC</td>
-          <td class="px-6 py-4 font-bold ${textColorClass}">${addBtc > 1e-18 ? formatBTC(addBtc) : 'None'}</td>
-        </tr>`;
+          <td class="px-6 py-4 font-bold ${textColorClass}">${addBtc > EPS ? formatBTC(addBtc) : 'None'}</td>
+        </tr>
+      `);
     });
 
-    // Update target field with final year's unused vs peak value
-    if (rows.length > 0 && simulationMode === 'loan') {
-      const lastRow = rows[rows.length - 1];
-      const finalUnused = globalPeak - lastRow.requiredBtcCollateral;
-      targetUnusedVsPeakFinalInput.value = finalUnused.toFixed(8);
-      
-      // Make field read-only in optimized mode
-      if (withdrawalMode === 'optimized') {
-        targetUnusedVsPeakFinalInput.readOnly = true;
-        targetUnusedVsPeakFinalInput.style.backgroundColor = '#f3f4f6';
-        targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. (Read-only in Optimized mode)';
-      } else {
-        targetUnusedVsPeakFinalInput.readOnly = false;
-        targetUnusedVsPeakFinalInput.style.backgroundColor = 'white';
-        targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. Edit to require a target; BTC for Collateral = peak + target.';
-      }
-    }
-
     const strategyDescription = withdrawalMode === 'optimized' ? 'Optimized withdrawal strategy' : 'Fixed withdrawal strategy';
-    tableSubtitle.innerHTML = `<strong>TOTAL EXTRACTED: ${formatCurrency(totalExtracted)}</strong> <span class="text-sm text-slate-600 font-normal ml-2">- ${strategyDescription}</span>`;
-    
-    // Summary row at the bottom of the table
-    resultsTableBody.innerHTML += `
+    elements.tableSubtitle.innerHTML = `<strong>TOTAL EXTRACTED: ${formatCurrency(totalExtracted)}</strong> <span class="text-sm text-slate-600 font-normal ml-2">- ${strategyDescription}</span>`;
+
+    tableRows.push(`
       <tr class="bg-blue-100 border-t-2 border-blue-300 font-semibold">
         <td class="px-6 py-4 text-blue-800" colspan="3"><strong>TOTAL EXTRACTED:</strong></td>
         <td class="px-6 py-4 text-blue-800"><strong>${formatCurrency(totalExtracted)}</strong></td>
         <td colspan="5" class="px-6 py-4 text-xs text-blue-600">${strategyDescription}</td>
-      </tr>`;
+      </tr>
+    `);
 
+    return tableRows;
+  };
+
+  const buildSellTableRows = (rows) => {
+    let totalWithdrawn = 0;
+    const tableRows = [];
+
+    rows.forEach((r) => {
+      const actualWithdrawn = r.btcSold * r.supportPrice;
+      totalWithdrawn += actualWithdrawn;
+
+      const rowClass = r.depleted ? 'row-red' : 'bg-white';
+      const balanceCell = r.depleted ? 'Depleted' : formatBTC(r.remainingBtc);
+      const balanceColor = r.depleted ? 'text-red-600' : 'text-slate-800';
+
+      tableRows.push(`
+        <tr class="${rowClass} border-b hover:bg-stone-50">
+          <td class="px-6 py-4 font-medium text-slate-900">${r.year}</td>
+          <td class="px-6 py-4">${formatCurrency(r.supportPrice)}</td>
+          <td class="px-6 py-4">${formatCurrency(r.usdToWithdraw)}</td>
+          <td class="px-6 py-4">${formatBTC(r.btcSold)}</td>
+          <td class="px-6 py-4 font-bold ${balanceColor}">${balanceCell}</td>
+        </tr>
+      `);
+    });
+
+    elements.tableSubtitle.innerHTML = `<strong>TOTAL WITHDRAWN (ACTUAL): ${formatCurrency(totalWithdrawn)}</strong>`;
+
+    tableRows.push(`
+      <tr class="bg-blue-100 border-t-2 border-blue-300 font-semibold">
+        <td class="px-6 py-4 text-blue-800" colspan="2"><strong>TOTAL WITHDRAWN (ACTUAL):</strong></td>
+        <td class="px-6 py-4 text-blue-800"><strong>${formatCurrency(totalWithdrawn)}</strong></td>
+        <td colspan="2" class="px-6 py-4 text-xs text-blue-600">Actual amount withdrawn over the simulation period</td>
+      </tr>
+    `);
+
+    return tableRows;
+  };
+
+  const configureLoanChart = (rows) => {
+    const labels = rows.map(r => r.year);
     mainChart.options.scales = {
       yPrice: { type: 'logarithmic', position: 'left', title: { display: true, text: 'BTC Price ($)' }, ticks: { callback: v => formatCurrency(v) } },
       yLoan:  { type: 'logarithmic', position: 'right', title: { display: true, text: 'Loan/Debt Amount ($)' }, ticks: { callback: v => formatCurrency(v) }, grid: { drawOnChartArea: false } },
@@ -687,22 +741,87 @@
         { label: 'Total Accumulated Debt',  data: rows.map(r => r.totalDebt), borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 0, yAxisID: 'yLoan' }
       ]
     };
-  }
+  };
 
-  function renderSell(btcAmount, startYear, years) {
-    loanParams.classList.add('hidden');
-    targetContainer.classList.add('hidden');
-    chartTitleEl.textContent = 'Remaining BTC Balance Projection';
-    tableTitleEl.textContent = 'Sell Strategy Details';
-    btcAmountLabel.textContent = 'BTC to Sell';
-    modeLoanBtn.classList.remove('active');
-    modeSellBtn.classList.add('active');
+  const configureSellChart = (rows) => {
+    const labels = rows.map(r => r.year);
+    mainChart.options.scales = {
+      y: { type: 'linear', position: 'left', title: { display: true, text: 'Remaining BTC Balance' }, ticks: { callback: v => v.toFixed(2) + ' BTC' } },
+      x: { ticks: { maxRotation: 0, minRotation: 0, autoSkip: true, maxTicksLimit: 15 } }
+    };
+    mainChart.data = {
+      labels,
+      datasets: [
+        { label: 'Remaining BTC Balance', data: rows.map(r => r.remainingBtc), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 0, yAxisID: 'y' }
+      ]
+    };
+  };
 
-    // Ensure Annual Withdrawal visible in SELL
-    fixedWithdrawalControls.classList.remove('hidden');
-    optimizedWithdrawalControls.classList.add('hidden');
+  const renderLoan = (btcAmount, startYear, simulationYears) => {
+    elements.loanParams.classList.remove('hidden');
+    elements.targetContainer.classList.remove('hidden');
+    elements.chartTitleEl.textContent = 'Debt vs. Capacity Projection';
+    elements.tableTitleEl.textContent = 'Loan Calculation Details';
+    elements.btcAmountLabel.textContent = 'BTC for Collateral';
 
-    resultsTableHeader.innerHTML = `
+    if (withdrawalMode === 'optimized') {
+      elements.fixedWithdrawalControls.classList.add('hidden');
+      elements.optimizedWithdrawalControls.classList.remove('hidden');
+    } else {
+      elements.fixedWithdrawalControls.classList.remove('hidden');
+      elements.optimizedWithdrawalControls.classList.add('hidden');
+    }
+
+    const withdrawalHeader = withdrawalMode === 'optimized' ? 'Optimized Withdrawal ($)' : 'Annual Withdrawal ($)';
+
+    elements.resultsTableHeader.innerHTML = `
+      <tr>
+        <th class="px-6 py-3">Year</th>
+        <th class="px-6 py-3">Support Price ($)</th>
+        <th class="px-6 py-3">Maximum Possible Loan ($)</th>
+        <th class="px-6 py-3">${withdrawalHeader}</th>
+        <th class="px-6 py-3">Total Debt ($)</th>
+        <th class="px-6 py-3">Annual Interest ($)</th>
+        <th class="px-6 py-3">Required BTC Collateral</th>
+        <th class="px-6 py-3">Unused BTC vs Peak</th>
+        <th class="px-6 py-3">Additional Collateral Required (BTC)</th>
+      </tr>`;
+
+    const rows = computeLoanRows(btcAmount, startYear, simulationYears);
+    const tableRows = buildLoanTableRows(rows, simulationYears, withdrawalMode);
+    elements.resultsTableBody.innerHTML = tableRows.join('');
+
+    if (rows.length > 0) {
+      const lastRow = rows[rows.length - 1];
+      const globalPeak = rows.reduce((max, r) => Math.max(max, r.requiredBtcCollateral), 0);
+      const finalUnused = globalPeak - lastRow.requiredBtcCollateral;
+      elements.targetUnusedVsPeakFinalInput.value = finalUnused.toFixed(8);
+
+      if (withdrawalMode === 'optimized') {
+        elements.targetUnusedVsPeakFinalInput.readOnly = true;
+        elements.targetUnusedVsPeakFinalInput.style.backgroundColor = '#f3f4f6';
+        elements.targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. (Read-only in Optimized mode)';
+      } else {
+        elements.targetUnusedVsPeakFinalInput.readOnly = false;
+        elements.targetUnusedVsPeakFinalInput.style.backgroundColor = 'white';
+        elements.targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. Edit to require a target; BTC for Collateral = peak + target.';
+      }
+    }
+
+    configureLoanChart(rows);
+  };
+
+  const renderSell = (btcAmount, startYear, simulationYears) => {
+    elements.loanParams.classList.add('hidden');
+    elements.targetContainer.classList.add('hidden');
+    elements.chartTitleEl.textContent = 'Remaining BTC Balance Projection';
+    elements.tableTitleEl.textContent = 'Sell Strategy Details';
+    elements.btcAmountLabel.textContent = 'BTC to Sell';
+
+    elements.fixedWithdrawalControls.classList.remove('hidden');
+    elements.optimizedWithdrawalControls.classList.add('hidden');
+
+    elements.resultsTableHeader.innerHTML = `
       <tr>
         <th class="px-6 py-3">Year</th>
         <th class="px-6 py-3">Support Price ($)</th>
@@ -711,229 +830,112 @@
         <th class="px-6 py-3">Remaining BTC Balance</th>
       </tr>`;
 
-    const rows = computeSellRows(btcAmount, startYear, years);
+    const rows = computeSellRows(btcAmount, startYear, simulationYears);
+    const tableRows = buildSellTableRows(rows);
+    elements.resultsTableBody.innerHTML = tableRows.join('');
 
-    const labels = [], balanceData = [];
-    let totalWithdrawn = 0;
+    configureSellChart(rows);
+  };
 
-    rows.forEach(r => {
-      const { year, supportPrice, usdToWithdraw, btcSold, remainingBtc, depleted } = r;
-      labels.push(year);
-      balanceData.push(remainingBtc);
-      
-      // Calculate actual USD withdrawn (when depleted, only count what was actually sold)
-      const actualWithdrawn = btcSold * supportPrice;
-      totalWithdrawn += actualWithdrawn;
+  const updateSimulation = () => {
+    initializeChart();
 
-      const rowClass = depleted ? 'row-red' : 'bg-white';
-      const balanceCell = depleted ? 'Depleted' : formatBTC(remainingBtc);
-      const balanceColor = depleted ? 'text-red-600' : 'text-slate-800';
+    const btcAmount = Math.max(0, parseFloat(elements.btcAmountInput.value) || 0);
+    const startYear = parseInt(elements.startYearInput.value);
+    const simulationYears = parseInt(elements.endYearInput.value) - startYear;
 
-      resultsTableBody.innerHTML += `
-        <tr class="${rowClass} border-b hover:bg-stone-50">
-          <td class="px-6 py-4 font-medium text-slate-900">${year}</td>
-          <td class="px-6 py-4">${formatCurrency(supportPrice)}</td>
-          <td class="px-6 py-4">${formatCurrency(usdToWithdraw)}</td>
-          <td class="px-6 py-4">${formatBTC(btcSold)}</td>
-          <td class="px-6 py-4 font-bold ${balanceColor}">${balanceCell}</td>
-        </tr>`;
-    });
-
-    tableSubtitle.innerHTML = `<strong>TOTAL WITHDRAWN (ACTUAL): ${formatCurrency(totalWithdrawn)}</strong>`;
-    
-    // Summary row at the bottom of the table
-    resultsTableBody.innerHTML += `
-      <tr class="bg-blue-100 border-t-2 border-blue-300 font-semibold">
-        <td class="px-6 py-4 text-blue-800" colspan="2"><strong>TOTAL WITHDRAWN (ACTUAL):</strong></td>
-        <td class="px-6 py-4 text-blue-800"><strong>${formatCurrency(totalWithdrawn)}</strong></td>
-        <td colspan="2" class="px-6 py-4 text-xs text-blue-600">Actual amount withdrawn over the simulation period</td>
-      </tr>`;
-
-    mainChart.options.scales = {
-      y: { type: 'linear', position: 'left', title: { display: true, text: 'Remaining BTC Balance' }, ticks: { callback: v => v.toFixed(2) + ' BTC' } },
-      x: { ticks: { maxRotation: 0, minRotation: 0, autoSkip: true, maxTicksLimit: 15 } }
-    };
-    mainChart.data = {
-      labels,
-      datasets: [
-        { label: 'Remaining BTC Balance', data: balanceData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 0, yAxisID: 'y' }
-      ]
-    };
-  }
-
-  // Auto calculators
-  function calculateSafeCollateral() {
-    const startYear = parseInt(startYearInput.value);
-    const endYear = parseInt(endYearInput.value);
-    const years = endYear - startYear;
-    const annualWithdrawal = parseFloat(annualWithdrawalInput.value) || 0;
-
-    if (annualWithdrawal <= 0) { updateSimulation(); return; }
-
-    let low = 0, high = 1e6, best = high;
-    for (let k = 0; k < 80; k++) {
-      const mid = (low + high) / 2;
-      const unsafe = runLoanUnsafeCheck(mid, annualWithdrawal, startYear, years);
-      if (!unsafe) { best = mid; high = mid; } else { low = mid; }
-    }
-    btcAmountInput.value = (Math.ceil(best * 1e8) / 1e8).toFixed(8);
-    updateSimulation();
-  }
-
-  function calculateSafeCollateralOptimized() {
-    const startYear = parseInt(startYearInput.value);
-    const endYear = parseInt(endYearInput.value);
-    const years = endYear - startYear;
-
-    let low = 0, high = 1e6, best = high;
-    for (let k = 0; k < 80; k++) {
-      const mid = (low + high) / 2;
-      const unsafe = runOptimizedLoanUnsafeCheck(mid, startYear, years);
-      if (!unsafe) { best = mid; high = mid; } else { low = mid; }
-    }
-    btcAmountInput.value = (Math.ceil(best * 1e8) / 1e8).toFixed(8);
-    updateSimulation();
-  }
-
-  function autoCalcBtcForSell() {
-    const startYear = parseInt(startYearInput.value);
-    const endYear = parseInt(endYearInput.value);
-    const years = endYear - startYear;
-    const annualWithdrawal = parseFloat(annualWithdrawalInput.value) || 0;
-
-    if (annualWithdrawal <= 0) { updateSimulation(); return; }
-
-    let low = 0, high = 1e6, best = high;
-    for (let k = 0; k < 80; k++) {
-      const mid = (low + high) / 2;
-      const depleted = runSellDepleted(mid, annualWithdrawal, startYear, years);
-      if (!depleted) { best = mid; high = mid; } else { low = mid; }
-    }
-    btcAmountInput.value = (Math.ceil(best * 1e8) / 1e8).toFixed(8);
-    updateSimulation();
-  }
-
-  // Safe withdrawal calculator
-  function calculateSafeWithdrawal() {
-    const startYear = parseInt(startYearInput.value);
-    const endYear = parseInt(endYearInput.value);
-    const years = endYear - startYear;
-    const btc = parseFloat(btcAmountInput.value) || 0;
-
-    if (btc <= 0) return;
-
-    let low = 0, high = 1e7, safe = 0;
-
-    for (let i = 0; i < 80; i++) {
-      const mid = (low + high) / 2;
-      let unsafe;
-
-      if (simulationMode === 'loan') {
-        unsafe = runLoanUnsafeCheck(btc, mid, startYear, years);
-      } else {
-        unsafe = runSellDepleted(btc, mid, startYear, years);
-      }
-
-      if (!unsafe) { safe = mid; low = mid; } else { high = mid; }
+    if (simulationMode === 'loan') {
+      renderLoan(btcAmount, startYear, simulationYears);
+    } else {
+      renderSell(btcAmount, startYear, simulationYears);
     }
 
-    annualWithdrawalInput.value = Math.floor(safe);
-    updateSimulation();
-  }
+    updateCalculateSafeBtcButtonLabel();
+    mainChart.update();
+  };
 
-  // Events
-  function setupEventListeners() {
+  // Event Listeners Setup
+  const setupEventListeners = () => {
     const updateSliderLabel = (input, span, isFloat = false) => {
       span.textContent = isFloat ? parseFloat(input.value).toFixed(1) : input.value;
     };
 
-    ltvInput.addEventListener('input', () => updateSliderLabel(ltvInput, ltvValueSpan));
-    interestRateInput.addEventListener('input', () => updateSliderLabel(interestRateInput, interestRateValueSpan, true));
-    inflationRateInput.addEventListener('input', () => updateSliderLabel(inflationRateInput, inflationRateValueSpan, true));
-    safetyMarginInput.addEventListener('input', () => updateSliderLabel(safetyMarginInput, safetyMarginValueSpan, true));
+    elements.ltvInput.addEventListener('input', () => updateSliderLabel(elements.ltvInput, elements.ltvValueSpan));
+    elements.interestRateInput.addEventListener('input', () => updateSliderLabel(elements.interestRateInput, elements.interestRateValueSpan, true));
+    elements.inflationRateInput.addEventListener('input', () => updateSliderLabel(elements.inflationRateInput, elements.inflationRateValueSpan, true));
+    elements.safetyMarginInput.addEventListener('input', () => updateSliderLabel(elements.safetyMarginInput, elements.safetyMarginValueSpan, true));
 
-    startYearInput.addEventListener('input', () => {
-      updateSliderLabel(startYearInput, startYearValueSpan);
-      const minEnd = parseInt(startYearInput.value) + 1;
-      endYearInput.min = String(minEnd);
-      if (parseInt(endYearInput.value) < minEnd) {
-        endYearInput.value = String(minEnd);
-        endYearValueSpan.textContent = endYearInput.value;
+    elements.startYearInput.addEventListener('input', () => {
+      updateSliderLabel(elements.startYearInput, elements.startYearValueSpan);
+      const minEnd = parseInt(elements.startYearInput.value) + 1;
+      elements.endYearInput.min = minEnd.toString();
+      if (parseInt(elements.endYearInput.value) < minEnd) {
+        elements.endYearInput.value = minEnd.toString();
+        elements.endYearValueSpan.textContent = elements.endYearInput.value;
       }
       updateSimulation();
     });
 
-    endYearInput.addEventListener('input', () => {
-      updateSliderLabel(endYearInput, endYearValueSpan);
-      const newMaxForStart = parseInt(endYearInput.value) - 1;
-      startYearInput.max = String(newMaxForStart);
-      const startVal = parseInt(startYearInput.value);
+    elements.endYearInput.addEventListener('input', () => {
+      updateSliderLabel(elements.endYearInput, elements.endYearValueSpan);
+      const newMaxForStart = parseInt(elements.endYearInput.value) - 1;
+      elements.startYearInput.max = newMaxForStart.toString();
+      const startVal = parseInt(elements.startYearInput.value);
       const minEnd = startVal + 1;
-      if (parseInt(endYearInput.value) < minEnd) {
-        endYearInput.value = String(minEnd);
-        endYearValueSpan.textContent = endYearInput.value;
+      if (parseInt(elements.endYearInput.value) < minEnd) {
+        elements.endYearInput.value = minEnd.toString();
+        elements.endYearValueSpan.textContent = elements.endYearInput.value;
       }
       updateSimulation();
     });
 
-    [btcAmountInput, ltvInput, interestRateInput, inflationRateInput, annualWithdrawalInput, safetyMarginInput, minWithdrawalInput]
+    [elements.btcAmountInput, elements.ltvInput, elements.interestRateInput, elements.inflationRateInput, elements.annualWithdrawalInput, elements.safetyMarginInput, elements.minWithdrawalInput]
       .forEach(input => input.addEventListener('change', updateSimulation));
 
-    // Strategy mode switch
-    modeLoanBtn.addEventListener('click', () => {
+    elements.modeLoanBtn.addEventListener('click', () => {
       simulationMode = 'loan';
-      // Always reset to Fixed when returning to LOAN mode.
       withdrawalMode = 'fixed';
-      modeFixedWithdrawalBtn.classList.add('active');
-      modeOptimizedWithdrawalBtn.classList.remove('active');
-      
-      modeLoanBtn.classList.add('active'); 
-      modeSellBtn.classList.remove('active');
-      
-      // Reset target field to editable
-      targetUnusedVsPeakFinalInput.readOnly = false;
-      targetUnusedVsPeakFinalInput.style.backgroundColor = 'white';
-      targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. Edit to require a target; BTC for Collateral = peak + target.';
-      
+      elements.modeFixedWithdrawalBtn.classList.add('active');
+      elements.modeOptimizedWithdrawalBtn.classList.remove('active');
+      elements.modeLoanBtn.classList.add('active');
+      elements.modeSellBtn.classList.remove('active');
+      elements.targetUnusedVsPeakFinalInput.readOnly = false;
+      elements.targetUnusedVsPeakFinalInput.style.backgroundColor = 'white';
+      elements.targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. Edit to require a target; BTC for Collateral = peak + target.';
       calculateSafeCollateral();
     });
 
-    modeSellBtn.addEventListener('click', () => {
+    elements.modeSellBtn.addEventListener('click', () => {
       simulationMode = 'sell';
-      modeSellBtn.classList.add('active'); 
-      modeLoanBtn.classList.remove('active');
+      elements.modeSellBtn.classList.add('active');
+      elements.modeLoanBtn.classList.remove('active');
       autoCalcBtcForSell();
     });
 
-    // Withdrawal mode switch
-    modeFixedWithdrawalBtn.addEventListener('click', () => {
+    elements.modeFixedWithdrawalBtn.addEventListener('click', () => {
       withdrawalMode = 'fixed';
-      modeFixedWithdrawalBtn.classList.add('active'); 
-      modeOptimizedWithdrawalBtn.classList.remove('active');
-      targetUnusedVsPeakFinalInput.readOnly = false;
-      targetUnusedVsPeakFinalInput.style.backgroundColor = 'white';
-      targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. Edit to require a target; BTC for Collateral = peak + target.';
+      elements.modeFixedWithdrawalBtn.classList.add('active');
+      elements.modeOptimizedWithdrawalBtn.classList.remove('active');
+      elements.targetUnusedVsPeakFinalInput.readOnly = false;
+      elements.targetUnusedVsPeakFinalInput.style.backgroundColor = 'white';
+      elements.targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. Edit to require a target; BTC for Collateral = peak + target.';
       updateSimulation();
     });
 
-    modeOptimizedWithdrawalBtn.addEventListener('click', () => {
+    elements.modeOptimizedWithdrawalBtn.addEventListener('click', () => {
       withdrawalMode = 'optimized';
-      modeOptimizedWithdrawalBtn.classList.add('active'); 
-      modeFixedWithdrawalBtn.classList.remove('active');
-      targetUnusedVsPeakFinalInput.readOnly = true;
-      targetUnusedVsPeakFinalInput.style.backgroundColor = '#f3f4f6';
-      targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. (Read-only in Optimized mode)';
+      elements.modeOptimizedWithdrawalBtn.classList.add('active');
+      elements.modeFixedWithdrawalBtn.classList.remove('active');
+      elements.targetUnusedVsPeakFinalInput.readOnly = true;
+      elements.targetUnusedVsPeakFinalInput.style.backgroundColor = '#f3f4f6';
+      elements.targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. (Read-only in Optimized mode)';
       updateSimulation();
     });
 
-    // Maximize Safety Margin button
-    maximizeSafetyMarginBtn.addEventListener('click', maximizeSafetyMargin);
+    elements.maximizeSafetyMarginBtn.addEventListener('click', maximizeSafetyMargin);
+    elements.calculateSafeWithdrawalBtn.addEventListener('click', calculateSafeWithdrawal);
 
-    // Calculate Safe Amount
-    document.getElementById('calculateSafeWithdrawalBtn').addEventListener('click', calculateSafeWithdrawal);
-
-    // Calculate Safe BTC works across modes
-    document.getElementById('calculateSafeCollateralBtn').addEventListener('click', () => {
+    elements.calculateSafeCollateralBtn.addEventListener('click', () => {
       if (simulationMode === 'loan') {
         if (withdrawalMode === 'fixed') calculateSafeCollateral();
         else calculateSafeCollateralOptimized();
@@ -942,62 +944,61 @@
       }
     });
 
-    // Click on label for SELL to auto-calc minimal BTC
-    btcAmountLabel.addEventListener('click', () => {
+    elements.btcAmountLabel.addEventListener('click', () => {
       if (simulationMode === 'sell') autoCalcBtcForSell();
     });
 
-    // Target editor (only LOAN in fixed mode)
     let applyTimeout;
-    targetUnusedVsPeakFinalInput.addEventListener('input', () => {
+    elements.targetUnusedVsPeakFinalInput.addEventListener('input', () => {
       if (simulationMode !== 'loan' || withdrawalMode !== 'fixed') return;
-      const target = parseFloat(targetUnusedVsPeakFinalInput.value);
+      const target = parseFloat(elements.targetUnusedVsPeakFinalInput.value);
       if (!isFinite(target)) return;
 
-      const startYear = parseInt(startYearInput.value);
-      const endYear = parseInt(endYearInput.value);
-      const years = endYear - startYear;
+      const startYear = parseInt(elements.startYearInput.value);
+      const simulationYears = parseInt(elements.endYearInput.value) - startYear;
 
-      const rows = computeLoanRows(parseFloat(btcAmountInput.value) || 0, startYear, years);
+      const rows = computeLoanRows(parseFloat(elements.btcAmountInput.value) || 0, startYear, simulationYears);
       const peak = rows.reduce((m, r) => Math.max(m, r.requiredBtcCollateral), 0);
 
       const desiredBtc = Math.max(0, peak + target);
-      const currentBtc = parseFloat(btcAmountInput.value) || 0;
-      if (Math.abs(desiredBtc - currentBtc) > 1e-9) {
+      const currentBtc = parseFloat(elements.btcAmountInput.value) || 0;
+      if (Math.abs(desiredBtc - currentBtc) > EPS) {
         if (applyTimeout) clearTimeout(applyTimeout);
         applyTimeout = setTimeout(() => {
-          btcAmountInput.value = (Math.round(desiredBtc * 1e8) / 1e8).toFixed(8);
+          elements.btcAmountInput.value = (Math.round(desiredBtc * 1e8) / 1e8).toFixed(8);
           updateSimulation();
         }, 30);
       }
     });
-  }
+  };
 
-  // Init
+  // Initialization
   window.onload = () => {
     const currentYear = new Date().getFullYear();
-    startYearInput.min = currentYear;
-    startYearInput.value = currentYear;
-    endYearInput.min = currentYear + 1;
-    endYearInput.max = 2085;
-    endYearInput.value = 2085;
-    startYearInput.max = endYearInput.value - 1;
+    elements.startYearInput.min = currentYear;
+    elements.startYearInput.value = currentYear;
+    elements.endYearInput.min = currentYear + 1;
+    elements.endYearInput.max = 2085;
+    elements.endYearInput.value = 2085;
+    elements.startYearInput.max = elements.endYearInput.value - 1;
 
-    startYearValueSpan.textContent = startYearInput.value;
-    endYearValueSpan.textContent = endYearInput.value;
-    ltvValueSpan.textContent = ltvInput.value;
-    interestRateValueSpan.textContent = parseFloat(interestRateInput.value).toFixed(1);
-    inflationRateValueSpan.textContent = parseFloat(inflationRateInput.value).toFixed(1);
-    safetyMarginValueSpan.textContent = parseFloat(safetyMarginInput.value).toFixed(1);
+    elements.startYearValueSpan.textContent = elements.startYearInput.value;
+    elements.endYearValueSpan.textContent = elements.endYearInput.value;
+    elements.ltvValueSpan.textContent = elements.ltvInput.value;
+    elements.interestRateValueSpan.textContent = parseFloat(elements.interestRateInput.value).toFixed(1);
+    elements.inflationRateValueSpan.textContent = parseFloat(elements.inflationRateInput.value).toFixed(1);
+    elements.safetyMarginValueSpan.textContent = parseFloat(elements.safetyMarginInput.value).toFixed(1);
 
     setupEventListeners();
     initializeChart();
-
-    // Default: LOAN with fixed withdrawal and automatic safe collateral
     calculateSafeCollateral();
   };
+})();
 </script>
 </body>
 </html>
+
+
+
 
 
