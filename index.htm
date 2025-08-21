@@ -70,7 +70,7 @@
               <label id="btcAmountLabel" for="btcAmount" class="block font-medium text-slate-600 cursor-pointer">BTC for Collateral</label>
               <div class="flex items-center space-x-2 mt-1">
                 <input type="number" id="btcAmount" value="1.00000000" step="0.00000001" min="0" max="1000000" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                <button type="button" id="calculateSafeWithdrawalBtn" class="px-3 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm whitespace-nowrap">Calculate Safe Amount</button>
+                <button type="button" id="calculateSafeWithdrawalBtn" class="px-3 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm whitespace-nowrap">Calculate Safe Withdrawal Amount</button>
               </div>
             </div>
 
@@ -114,9 +114,7 @@
               <label for="annualWithdrawal" class="block font-medium text-slate-600">Annual Withdrawal ($)</label>
               <div class="flex items-center space-x-2 mt-1">
                 <input type="number" id="annualWithdrawal" value="10000" step="100" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                <button type="button" id="calculateSafeCollateralBtn" class="px-3 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm whitespace-nowrap">
-                  Calculate Safe BTC
-                </button>
+                <button type="button" id="calculateSafeCollateralBtn" class="px-3 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm whitespace-nowrap">Calculate Safe BTC for Collateral</button>
               </div>
             </div>
 
@@ -613,12 +611,12 @@
     if (simulationMode === 'loan' && withdrawalMode === 'optimized') {
       elements.calculateSafeCollateralBtn.innerHTML = `
         <div class="leading-tight text-center">
-          <div class="font-medium">Calculate Safe BTC</div>
+          <div class="font-medium">Calculate Safe BTC for Collateral</div>
           <div class="text-xs opacity-80">Wait a little</div>
         </div>
       `;
     } else {
-      elements.calculateSafeCollateralBtn.textContent = 'Calculate Safe BTC';
+      elements.calculateSafeCollateralBtn.textContent = 'Calculate Safe BTC for Collateral';
     }
   };
 
