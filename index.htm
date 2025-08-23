@@ -92,7 +92,7 @@
               <label id="btcAmountLabel" for="btcAmount" class="block font-medium text-slate-600 cursor-pointer">BTC for Collateral</label>
               <div class="flex items-center space-x-2 mt-1">
                 <input type="number" id="btcAmount" value="0" step="0.00000001" min="0" max="1000000" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                <button type="button" id="calculateSafeWithdrawalBtn" class="px-3 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm whitespace-nowrap">Calculate Safe Withdrawal Amount</button>
+                <button type="button" id="calculateSafeWithdrawalBtn" class="px-3 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm whitespace-nowrap">Calculate Safe Withdrawal</button>
               </div>
             </div>
 
@@ -102,6 +102,46 @@
                 Annual Inflation Rate: <span id="inflationRateValue" class="font-bold text-blue-700">0.0</span>%
               </label>
               <input type="range" id="inflationRate" min="0" max="20" step="0.1" value="0" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-blue-500">
+            </div>
+
+            <!-- Tax controls (only visible in sell mode) -->
+            <div id="taxControls" class="hidden space-y-6">
+              <div>
+                <label for="taxRate" class="block font-medium text-slate-600">
+                  Tax Rate: <span id="taxRateValue" class="font-bold text-blue-700">0</span>%
+                </label>
+                <input type="range" id="taxRate" min="0" max="100" step="1" value="0" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                
+                <!-- Tax Rate Warning Message -->
+                <div id="taxRateWarning" class="hidden mt-2">
+                  <p class="text-red-600 font-bold text-sm break-all">
+                    Remember that paying taxes makes you a slave and a stupid.  You are killing yourself, your family and you are financing death of many other people and children. So you are even evil by knowing this.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label for="purchasePrice" class="block font-medium text-slate-600">Purchase Price ($)</label>
+                <input type="number" id="purchasePrice" value="0" step="100" min="0" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 mt-1">
+              </div>
+
+              <div>
+                <label for="carryoverPeriod" class="block font-medium text-slate-600">Capital Loss Carryover Period</label>
+                <input type="number" id="carryoverPeriod" value="0" step="1" min="0" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 mt-1">
+                <p class="text-xs text-slate-500 mt-1">0 is equal unlimited</p>
+              </div>
+
+              <!-- Remaining Amount controls (only visible in sell mode) -->
+              <div>
+                <label for="remainingAmount" class="block font-medium text-slate-600">Remaining Amount</label>
+                <div class="flex items-center space-x-2 mt-1">
+                  <input type="number" id="remainingAmount" value="0" step="0.00000001" min="0" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                  <div class="flex rounded-md shadow-sm">
+                    <button type="button" id="remainingAmountBTC" class="mode-button rounded-l-md active">BTC</button>
+                    <button type="button" id="remainingAmountUSD" class="mode-button rounded-r-md -ml-px">USD</button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div id="loanParams">
@@ -136,7 +176,7 @@
               <label for="annualWithdrawal" class="block font-medium text-slate-600">Annual Withdrawal ($)</label>
               <div class="flex items-center space-x-2 mt-1">
                 <input type="number" id="annualWithdrawal" value="0" step="100" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                <button type="button" id="calculateSafeCollateralBtn" class="px-3 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm whitespace-nowrap">Calculate Safe BTC for Collateral</button>
+                <button type="button" id="calculateSafeCollateralBtn" class="px-3 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm whitespace-nowrap">Calculate Safe Collateral</button>
               </div>
             </div>
 
@@ -655,13 +695,25 @@
     optimizedWithdrawalControls: document.getElementById('optimizedWithdrawalControls'),
     calculateSafeCollateralBtn: document.getElementById('calculateSafeCollateralBtn'),
     calculateSafeWithdrawalBtn: document.getElementById('calculateSafeWithdrawalBtn'),
-    mainChartCtx: document.getElementById('mainChart').getContext('2d')
+    mainChartCtx: document.getElementById('mainChart').getContext('2d'),
+    // Tax-related elements
+    taxControls: document.getElementById('taxControls'),
+    taxRateInput: document.getElementById('taxRate'),
+    taxRateValueSpan: document.getElementById('taxRateValue'),
+    taxRateWarning: document.getElementById('taxRateWarning'),
+    purchasePriceInput: document.getElementById('purchasePrice'),
+    carryoverPeriodInput: document.getElementById('carryoverPeriod'),
+    // Remaining Amount elements
+    remainingAmountInput: document.getElementById('remainingAmount'),
+    remainingAmountBTCBtn: document.getElementById('remainingAmountBTC'),
+    remainingAmountUSDBtn: document.getElementById('remainingAmountUSD')
   };
 
   // State
   let mainChart;
   let simulationMode = 'loan';
   let withdrawalMode = 'fixed'; // 'fixed' or 'optimized'
+  let remainingAmountMode = 'BTC'; // 'BTC' or 'USD'
   const priceCache = {}; // Memoization for powerLawPrice
   let isAutoUpdating = false; // Flag to prevent infinite loops
 
@@ -771,36 +823,147 @@
   const computeSellRows = (btcAmount, startYear, simulationYears) => {
     const inflationRate = Math.max(0, parseFloat(elements.inflationRateInput.value) || 0) / 100;
     const initialAnnualWithdrawal = Math.max(0, parseFloat(elements.annualWithdrawalInput.value) || 0);
+    const taxRate = Math.max(0, parseInt(elements.taxRateInput?.value) || 0) / 100;
+    const purchasePrice = Math.max(0, parseFloat(elements.purchasePriceInput?.value) || 0);
+    const carryoverPeriod = parseInt(elements.carryoverPeriodInput?.value) || 0;
     const prices = precomputePrices(startYear, simulationYears);
 
+    // Calculate remaining amount target in BTC
+    const remainingAmount = Math.max(0, parseFloat(elements.remainingAmountInput?.value) || 0);
+    let targetRemainingBtc = 0;
+    
+    if (remainingAmount > 0) {
+      if (remainingAmountMode === 'BTC') {
+        targetRemainingBtc = remainingAmount;
+      } else { // USD
+        // Calculate future value considering inflation
+        const finalYear = simulationYears;
+        const futureValue = remainingAmount * Math.pow(1 + inflationRate, finalYear);
+        const finalPrice = prices[finalYear];
+        targetRemainingBtc = finalPrice > 0 ? (futureValue / finalPrice) : 0;
+      }
+    }
+
     let remainingBtc = btcAmount;
+    let carryoverLosses = []; // Array of {amount, expiryYear}
     const rows = [];
+
     for (let i = 0; i <= simulationYears; i++) {
+      const currentYear = startYear + i;
       const supportPrice = prices[i];
       const usdToWithdraw = initialAnnualWithdrawal * Math.pow(1 + inflationRate, i);
-      const btcNeeded = supportPrice > 0 ? (usdToWithdraw / supportPrice) : Infinity;
-
+      
+      // Check if we need to preserve remaining amount for final year
+      const isLastYear = (i === simulationYears);
+      const availableBtc = isLastYear ? (remainingBtc - targetRemainingBtc) : remainingBtc;
+      
+      // Calculate BTC needed for main withdrawal
+      const btcNeededForWithdrawal = supportPrice > 0 ? (usdToWithdraw / supportPrice) : Infinity;
+      
       let btcSold = 0;
+      let btcSoldForTaxes = 0;
+      let taxWithdrawal = 0;
+      let expiredLosses = 0;
       let depleted = false;
-      if (remainingBtc >= btcNeeded) {
-        btcSold = btcNeeded;
-        remainingBtc -= btcSold;
+
+      // Remove expired carryover losses
+      if (carryoverPeriod > 0) {
+        const beforeExpiry = carryoverLosses.length;
+        carryoverLosses = carryoverLosses.filter(loss => {
+          if (currentYear > loss.expiryYear) {
+            expiredLosses += loss.amount;
+            return false;
+          }
+          return true;
+        });
+      }
+
+      if (availableBtc >= btcNeededForWithdrawal) {
+        btcSold = btcNeededForWithdrawal;
+        
+        // Calculate taxes if tax rate > 0
+        if (taxRate > 0 && supportPrice > 0) {
+          const gainPerBtc = supportPrice - purchasePrice;
+          let totalCapitalGain = btcSold * gainPerBtc;
+          
+          if (gainPerBtc < 0) {
+            // Capital loss - add to carryover
+            const lossAmount = Math.abs(totalCapitalGain);
+            const expiryYear = carryoverPeriod === 0 ? Infinity : (currentYear + carryoverPeriod);
+            carryoverLosses.push({ amount: lossAmount, expiryYear });
+          } else if (gainPerBtc > 0) {
+            // Capital gain - offset with carryover losses
+            let availableLosses = carryoverLosses.reduce((sum, loss) => sum + loss.amount, 0);
+            let offsetGain = Math.max(0, totalCapitalGain - availableLosses);
+            
+            // Apply carryover losses (FIFO)
+            let remainingGainToOffset = totalCapitalGain;
+            carryoverLosses = carryoverLosses.filter(loss => {
+              if (remainingGainToOffset <= 0) return true;
+              
+              if (loss.amount <= remainingGainToOffset) {
+                remainingGainToOffset -= loss.amount;
+                return false; // Remove this loss (fully used)
+              } else {
+                loss.amount -= remainingGainToOffset;
+                remainingGainToOffset = 0;
+                return true; // Keep partial loss
+              }
+            });
+            
+            // Calculate taxes on net gain
+            if (offsetGain > 0) {
+              const baseTaxes = offsetGain * taxRate;
+              
+              // Calculate additional BTC needed to pay taxes
+              // Solve: btcForTaxes * supportPrice = baseTaxes + (btcForTaxes * gainPerBtc * taxRate)
+              // btcForTaxes * (supportPrice - gainPerBtc * taxRate) = baseTaxes
+              const denominator = supportPrice - (gainPerBtc * taxRate);
+              
+              if (denominator > 0) {
+                btcSoldForTaxes = baseTaxes / denominator;
+                taxWithdrawal = btcSoldForTaxes * supportPrice;
+              }
+            }
+          }
+        }
+        
+        // Check if we have enough BTC for withdrawal + taxes
+        const totalBtcNeeded = btcSold + btcSoldForTaxes;
+        
+        if (availableBtc >= totalBtcNeeded) {
+          remainingBtc -= totalBtcNeeded;
+        } else {
+          // Not enough BTC - sell what we can
+          btcSold = availableBtc;
+          btcSoldForTaxes = 0;
+          taxWithdrawal = 0;
+          remainingBtc -= btcSold;
+          depleted = true;
+        }
       } else {
-        btcSold = remainingBtc;
-        remainingBtc = 0;
+        // Not enough BTC for full withdrawal
+        btcSold = Math.max(0, availableBtc);
+        btcSoldForTaxes = 0;
+        taxWithdrawal = 0;
+        remainingBtc -= btcSold;
         depleted = true;
       }
 
       rows.push({
         i,
-        year: startYear + i,
+        year: currentYear,
         supportPrice,
         usdToWithdraw,
         btcSold,
+        btcSoldForTaxes,
+        taxWithdrawal,
+        expiredLosses,
         remainingBtc,
         depleted
       });
     }
+    
     return rows;
   };
 
@@ -877,15 +1040,52 @@
     if (btcAmount <= 0 || annualWithdrawal <= 0) return false;
 
     const inflationRate = Math.max(0, parseFloat(elements.inflationRateInput.value) || 0) / 100;
+    const taxRate = Math.max(0, parseInt(elements.taxRateInput?.value) || 0) / 100;
+    const purchasePrice = Math.max(0, parseFloat(elements.purchasePriceInput?.value) || 0);
     const prices = precomputePrices(startYear, simulationYears);
+
+    // Calculate remaining amount target in BTC
+    const remainingAmount = Math.max(0, parseFloat(elements.remainingAmountInput?.value) || 0);
+    let targetRemainingBtc = 0;
+    
+    if (remainingAmount > 0) {
+      if (remainingAmountMode === 'BTC') {
+        targetRemainingBtc = remainingAmount;
+      } else { // USD
+        // Calculate future value considering inflation
+        const futureValue = remainingAmount * Math.pow(1 + inflationRate, simulationYears);
+        const finalPrice = prices[simulationYears];
+        targetRemainingBtc = finalPrice > 0 ? (futureValue / finalPrice) : 0;
+      }
+    }
 
     let remainingBtc = btcAmount;
     for (let i = 0; i <= simulationYears; i++) {
       const price = prices[i];
       if (price <= 0) return true;
+      
       const usd = annualWithdrawal * Math.pow(1 + inflationRate, i);
-      const btcNeed = usd / price;
-      if (remainingBtc < btcNeed - 1e-12) return true;
+      let btcNeed = usd / price;
+      
+      // Add BTC needed for taxes if tax rate > 0
+      if (taxRate > 0) {
+        const gainPerBtc = price - purchasePrice;
+        if (gainPerBtc > 0) {
+          // Calculate additional BTC needed for taxes
+          const baseTaxes = btcNeed * gainPerBtc * taxRate;
+          const denominator = price - (gainPerBtc * taxRate);
+          if (denominator > 0) {
+            const additionalBtc = baseTaxes / denominator;
+            btcNeed += additionalBtc;
+          }
+        }
+      }
+
+      // Check if we need to preserve remaining amount for final year
+      const isLastYear = (i === simulationYears);
+      const availableBtc = isLastYear ? (remainingBtc - targetRemainingBtc) : remainingBtc;
+      
+      if (availableBtc < btcNeed - 1e-12) return true;
       remainingBtc -= btcNeed;
     }
     return false;
@@ -1056,12 +1256,12 @@
     if (simulationMode === 'loan' && withdrawalMode === 'optimized') {
       elements.calculateSafeCollateralBtn.innerHTML = `
         <div class="leading-tight text-center">
-          <div class="font-medium">Calculate Safe BTC for Collateral</div>
+          <div class="font-medium">Calculate Safe Collateral</div>
           <div class="text-xs opacity-80">Wait a little</div>
         </div>
       `;
     } else {
-      elements.calculateSafeCollateralBtn.textContent = 'Calculate Safe BTC for Collateral';
+      elements.calculateSafeCollateralBtn.textContent = 'Calculate Safe Collateral';
     }
   };
 
@@ -1135,35 +1335,65 @@
   };
 
   const buildSellTableRows = (rows) => {
+    const taxRate = Math.max(0, parseInt(elements.taxRateInput?.value) || 0);
+    const showTaxColumns = taxRate > 0;
+    
     let totalWithdrawn = 0;
+    let totalTaxes = 0;
     const tableRows = [];
 
     rows.forEach((r) => {
       const actualWithdrawn = r.btcSold * r.supportPrice;
       totalWithdrawn += actualWithdrawn;
+      totalTaxes += r.taxWithdrawal || 0;
 
       const rowClass = r.depleted ? 'row-red' : 'bg-white';
       const balanceCell = r.depleted ? 'Depleted' : formatBTC(r.remainingBtc);
       const balanceColor = r.depleted ? 'text-red-600' : 'text-slate-800';
 
-      tableRows.push(`
+      let rowHtml = `
         <tr class="${rowClass} border-b hover:bg-stone-50">
           <td class="px-6 py-4 font-medium text-slate-900">${r.year}</td>
           <td class="px-6 py-4">${formatCurrency(r.supportPrice)}</td>
           <td class="px-6 py-4">${formatCurrency(r.usdToWithdraw)}</td>
-          <td class="px-6 py-4">${formatBTC(r.btcSold)}</td>
+          <td class="px-6 py-4">${formatBTC(r.btcSold)}</td>`;
+
+      if (showTaxColumns) {
+        const taxWithdrawal = r.taxWithdrawal || 0;
+        const btcSoldForTaxes = r.btcSoldForTaxes || 0;
+        const expiredLosses = r.expiredLosses || 0;
+        
+        rowHtml += `
+          <td class="px-6 py-4">${formatCurrency(taxWithdrawal)}</td>
+          <td class="px-6 py-4">${formatBTC(btcSoldForTaxes)}</td>
+          <td class="px-6 py-4 ${expiredLosses > 0 ? 'text-red-600' : ''}">${expiredLosses > 0 ? '-' + formatCurrency(expiredLosses) : '$0.00'}</td>`;
+      }
+
+      rowHtml += `
           <td class="px-6 py-4 font-bold ${balanceColor}">${balanceCell}</td>
         </tr>
-      `);
+      `;
+
+      tableRows.push(rowHtml);
     });
 
-    elements.tableSubtitle.innerHTML = `<strong>TOTAL WITHDRAWN (ACTUAL): ${formatCurrency(totalWithdrawn)}</strong>`;
+    if (showTaxColumns) {
+      elements.tableSubtitle.innerHTML = `<strong>TOTAL WITHDRAWN: ${formatCurrency(totalWithdrawn)} - TOTAL TAXES: ${formatCurrency(totalTaxes)}</strong>`;
+    } else {
+      elements.tableSubtitle.innerHTML = `<strong>TOTAL WITHDRAWN (ACTUAL): ${formatCurrency(totalWithdrawn)}</strong>`;
+    }
 
+    // Summary row
+    const summaryColspan = showTaxColumns ? 6 : 3;
+    const summaryContent = showTaxColumns ? 
+      `<strong>TOTAL WITHDRAWN: ${formatCurrency(totalWithdrawn)} - TOTAL TAXES: ${formatCurrency(totalTaxes)}</strong>` :
+      `<strong>TOTAL WITHDRAWN (ACTUAL): ${formatCurrency(totalWithdrawn)}</strong>`;
+    
     tableRows.push(`
       <tr class="bg-blue-100 border-t-2 border-blue-300 font-semibold">
-        <td class="px-6 py-4 text-blue-800" colspan="2"><strong>TOTAL WITHDRAWN (ACTUAL):</strong></td>
-        <td class="px-6 py-4 text-blue-800"><strong>${formatCurrency(totalWithdrawn)}</strong></td>
-        <td colspan="2" class="px-6 py-4 text-xs text-blue-600">Actual amount withdrawn over the simulation period</td>
+        <td class="px-6 py-4 text-blue-800" colspan="2"><strong>TOTALS:</strong></td>
+        <td class="px-6 py-4 text-blue-800">${summaryContent}</td>
+        <td colspan="${showTaxColumns ? '4' : '1'}" class="px-6 py-4 text-xs text-blue-600">Actual amounts over the simulation period</td>
       </tr>
     `);
 
@@ -1459,6 +1689,7 @@
   const renderLoan = (btcAmount, startYear, simulationYears) => {
     elements.loanParams.classList.remove('hidden');
     elements.targetContainer.classList.remove('hidden');
+    elements.taxControls.classList.add('hidden');
     elements.chartTitleEl.textContent = 'Debt vs. Capacity Projection';
     elements.tableTitleEl.textContent = 'Loan Calculation Details';
     elements.btcAmountLabel.textContent = 'BTC for Collateral';
@@ -1523,15 +1754,30 @@
 
     elements.fixedWithdrawalControls.classList.remove('hidden');
     elements.optimizedWithdrawalControls.classList.add('hidden');
+    elements.taxControls.classList.remove('hidden');
 
-    elements.resultsTableHeader.innerHTML = `
+    const taxRate = Math.max(0, parseInt(elements.taxRateInput?.value) || 0);
+    const showTaxColumns = taxRate > 0;
+
+    let headerHtml = `
       <tr>
         <th class="px-6 py-3">Year</th>
         <th class="px-6 py-3">Support Price ($)</th>
         <th class="px-6 py-3">Annual Withdrawal ($)</th>
-        <th class="px-6 py-3">BTC Sold This Year</th>
+        <th class="px-6 py-3">BTC Sold This Year</th>`;
+    
+    if (showTaxColumns) {
+      headerHtml += `
+        <th class="px-6 py-3">Annual Tax Withdrawal ($)</th>
+        <th class="px-6 py-3">BTC Sold This Year For Taxes</th>
+        <th class="px-6 py-3">Expired Capital Losses</th>`;
+    }
+    
+    headerHtml += `
         <th class="px-6 py-3">Remaining BTC Balance</th>
       </tr>`;
+
+    elements.resultsTableHeader.innerHTML = headerHtml;
 
     const rows = computeSellRows(btcAmount, startYear, simulationYears);
     const tableRows = buildSellTableRows(rows);
@@ -1567,6 +1813,38 @@
     elements.interestRateInput.addEventListener('input', () => updateSliderLabel(elements.interestRateInput, elements.interestRateValueSpan, true));
     elements.inflationRateInput.addEventListener('input', () => updateSliderLabel(elements.inflationRateInput, elements.inflationRateValueSpan, true));
     elements.safetyMarginInput.addEventListener('input', () => updateSliderLabel(elements.safetyMarginInput, elements.safetyMarginValueSpan, true));
+    
+    // Tax rate slider (only available in sell mode)
+    if (elements.taxRateInput && elements.taxRateValueSpan) {
+      elements.taxRateInput.addEventListener('input', () => {
+        updateSliderLabel(elements.taxRateInput, elements.taxRateValueSpan);
+        
+        // Show/hide tax rate warning
+        const taxRate = parseInt(elements.taxRateInput.value) || 0;
+        if (elements.taxRateWarning) {
+          if (taxRate > 0) {
+            elements.taxRateWarning.classList.remove('hidden');
+          } else {
+            elements.taxRateWarning.classList.add('hidden');
+          }
+        }
+      });
+    }
+
+    // Remaining Amount toggle buttons
+    if (elements.remainingAmountBTCBtn && elements.remainingAmountUSDBtn) {
+      elements.remainingAmountBTCBtn.addEventListener('click', () => {
+        remainingAmountMode = 'BTC';
+        elements.remainingAmountBTCBtn.classList.add('active');
+        elements.remainingAmountUSDBtn.classList.remove('active');
+        });
+
+      elements.remainingAmountUSDBtn.addEventListener('click', () => {
+        remainingAmountMode = 'USD';
+        elements.remainingAmountUSDBtn.classList.add('active');
+        elements.remainingAmountBTCBtn.classList.remove('active');
+        });
+    }
 
     elements.startYearInput.addEventListener('input', () => {
       updateSliderLabel(elements.startYearInput, elements.startYearValueSpan);
@@ -1593,8 +1871,33 @@
     });
 
     // Existing change listeners for updateSimulation
-    [elements.ltvInput, elements.interestRateInput, elements.inflationRateInput, elements.safetyMarginInput, elements.minWithdrawalInput]
-      .forEach(input => input.addEventListener('change', updateSimulation));
+    const simulationUpdateInputs = [
+      elements.ltvInput, 
+      elements.interestRateInput, 
+      elements.inflationRateInput, 
+      elements.safetyMarginInput, 
+      elements.minWithdrawalInput
+    ];
+    
+    // Add tax-related inputs if they exist
+    if (elements.taxRateInput) {
+      simulationUpdateInputs.push(elements.taxRateInput);
+      // Also add the change event to handle warning display
+      elements.taxRateInput.addEventListener('change', () => {
+        const taxRate = parseInt(elements.taxRateInput.value) || 0;
+        if (elements.taxRateWarning) {
+          if (taxRate > 0) {
+            elements.taxRateWarning.classList.remove('hidden');
+          } else {
+            elements.taxRateWarning.classList.add('hidden');
+          }
+        }
+        updateSimulation();
+      });
+    }
+    if (elements.purchasePriceInput) simulationUpdateInputs.push(elements.purchasePriceInput);
+    if (elements.carryoverPeriodInput) simulationUpdateInputs.push(elements.carryoverPeriodInput);
+simulationUpdateInputs.forEach(input => input.addEventListener('change', updateSimulation));
 
     // Special handlers for btcAmountInput and annualWithdrawalInput to avoid loops
     elements.btcAmountInput.addEventListener('change', () => {
@@ -1623,31 +1926,33 @@
       withdrawalMode = 'fixed';
       elements.modeFixedWithdrawalBtn.classList.add('active');
       elements.modeOptimizedWithdrawalBtn.classList.remove('active');
-      ele
+
+      // Lock the Unused BTC field (same visuals as Optimized)
       elements.targetUnusedVsPeakFinalInput.readOnly = true;
       elements.targetUnusedVsPeakFinalInput.disabled = true;
       elements.targetUnusedVsPeakFinalInput.style.pointerEvents = 'none';
       elements.targetUnusedVsPeakFinalInput.style.backgroundColor = '#f3f4f6';
-      elements.targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. Maybe it can go to the children :)';ments.targetUnusedVsPeakFinalInput.readOnly = true;
-      elements.targetUnusedVsPeakFinalInput.disabled = true;
-      elements.targetUnusedVsPeakFinalInput.style.pointerEvents = 'none';
-      elements.targetUnusedVsPeakFinalInput.style.backgroundColor = '#f3f4f6';
       elements.targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. Maybe it can go to the children :)';
+
+      // Toggle main mode buttons
       elements.modeLoanBtn.classList.add('active');
       elements.modeSellBtn.classList.remove('active');
-      elements.targetUnusedVsPeakFinalInput.readOnly = true;
-      elements.targetUnusedVsPeakFinalInput.disabled = true;
-      elements.targetUnusedVsPeakFinalInput.style.pointerEvents = 'none';
-      elements.targetUnusedVsPeakFinalInput.style.backgroundColor = '#f3f4f6';
-      elements.targetDescriptionEl.textContent = 'Shows BTC not used as collateral in the final year. Maybe it can go to the children :)';
+      
+      // Hide tax controls
+      elements.taxControls.classList.add('hidden');
+
+      // Recalculate and render
       calculateSafeCollateral();
+      updateSimulation();
     });
 
     elements.modeSellBtn.addEventListener('click', () => {
       simulationMode = 'sell';
       elements.modeSellBtn.classList.add('active');
       elements.modeLoanBtn.classList.remove('active');
+      elements.taxControls.classList.remove('hidden');
       autoCalcBtcForSell();
+      updateSimulation();
     });
 
     elements.modeFixedWithdrawalBtn.addEventListener('click', () => {
@@ -1730,6 +2035,27 @@
     elements.interestRateValueSpan.textContent = parseFloat(elements.interestRateInput.value).toFixed(1);
     elements.inflationRateValueSpan.textContent = parseFloat(elements.inflationRateInput.value).toFixed(1);
     elements.safetyMarginValueSpan.textContent = parseFloat(elements.safetyMarginInput.value).toFixed(1);
+
+    // Initialize tax-related values if elements exist
+    if (elements.taxRateValueSpan) {
+      elements.taxRateValueSpan.textContent = elements.taxRateInput?.value || '0';
+    }
+
+    // Hide tax controls and warning initially (default mode is loan)
+    if (elements.taxControls) {
+      elements.taxControls.classList.add('hidden');
+    }
+    if (elements.taxRateWarning) {
+      elements.taxRateWarning.classList.add('hidden');
+    }
+
+    // Initialize remaining amount toggle (default to BTC)
+    if (elements.remainingAmountBTCBtn) {
+      elements.remainingAmountBTCBtn.classList.add('active');
+    }
+    if (elements.remainingAmountUSDBtn) {
+      elements.remainingAmountUSDBtn.classList.remove('active');
+    }
 
     setupEventListeners();
     initializeChart();
