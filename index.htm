@@ -67,12 +67,12 @@
       </div>
     </section>
 
-    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <aside class="lg:col-span-1 flex flex-col gap-8">
+    <main class="flex flex-col gap-8">
+      <section class="flex flex-col gap-8">
         <div class="bg-white p-6 rounded-xl shadow-md border border-stone-200">
           <h2 class="text-2xl font-semibold mb-4 text-slate-700">Simulation Parameters</h2>
 
-          <div class="space-y-6">
+          <div class="flex flex-wrap gap-6">
             <div>
               <label class="block font-medium text-slate-600 mb-2">Strategy</label>
               <div class="flex items-center">
@@ -230,9 +230,9 @@
 
           </div>
         </div>
-      </aside>
+      </section>
 
-      <section class="lg:col-span-2 flex flex-col gap-8">
+      <section class="flex flex-col gap-8">
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-stone-200">
           <h2 id="chartTitle" class="text-2xl font-semibold mb-4 text-center text-slate-700">Debt vs. Capacity Projection</h2>
           <div class="chart-container"><canvas id="mainChart" style="box-sizing: border-box; display: block; height: 500px; width: 920px;" width="920" height="500"></canvas></div>
