@@ -126,14 +126,16 @@
               </div>
 
               <div>
-                <label for="carryoverPeriod" class="block font-medium text-slate-600">Capital Loss Carryover Period</label>
-                <input type="number" id="carryoverPeriod" value="0" step="1" min="0" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 mt-1">
-                <p class="text-xs text-slate-500 mt-1">0 is equal unlimited</p>
+                <label for="carryoverPeriod" class="block font-medium text-slate-600">
+                  Capital Loss Carryover Period: <span id="carryoverPeriodValue" class="font-bold text-blue-700">0</span> years
+                </label>
+                <input type="range" id="carryoverPeriod" min="0" max="15" step="1" value="0" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                <p class="text-xs text-slate-500 mt-1">0 = unlimited carryover period</p>
               </div>
 
               <!-- Remaining Amount controls (only visible in sell mode) -->
               <div>
-                <label for="remainingAmount" class="block font-medium text-slate-600">Remaining Amount</label>
+                <label for="remainingAmount" class="block font-medium text-slate-600">Remaining Amount (BTC)</label>
                 <div class="flex items-center space-x-2 mt-1">
                   <input type="number" id="remainingAmount" value="0" step="0.00000001" min="0" class="number-input block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                   <div class="flex rounded-md shadow-sm">
@@ -143,6 +145,7 @@
                 </div>
               </div>
             </div>
+            <p id="remainingAmountHint" class="text-xs mt-1 hidden" style="color:#16a34a;">Now you have to click on Calculate Safe Collateral or Calculate Safe Withdrawal.</p>
 
             <div id="loanParams">
               <div class="space-y-6">
@@ -703,11 +706,55 @@
     taxRateWarning: document.getElementById('taxRateWarning'),
     purchasePriceInput: document.getElementById('purchasePrice'),
     carryoverPeriodInput: document.getElementById('carryoverPeriod'),
+    carryoverPeriodValueSpan: document.getElementById('carryoverPeriodValue'),
     // Remaining Amount elements
     remainingAmountInput: document.getElementById('remainingAmount'),
     remainingAmountBTCBtn: document.getElementById('remainingAmountBTC'),
-    remainingAmountUSDBtn: document.getElementById('remainingAmountUSD')
+    remainingAmountUSDBtn: document.getElementById('remainingAmountUSD'),
+    remainingAmountLabel: document.querySelector('label[for=\"remainingAmount\"]'),
+    remainingAmountHint: document.getElementById('remainingAmountHint')
   };
+  // --- Reorder 'Annual Withdrawal ($)' above 'Remaining Amount' ONLY in Sell mode (non-destructive) ---
+  let _awOriginalParent = null;
+  let _awOriginalNext = null;
+
+  function _captureAWOriginalPosition() {
+    const aw = document.getElementById('fixedWithdrawalControls');
+    if (aw && !_awOriginalParent) {
+      _awOriginalParent = aw.parentElement;
+      _awOriginalNext = aw.nextElementSibling;
+    }
+  }
+
+  function moveAnnualWithdrawalAboveRemaining() {
+    _captureAWOriginalPosition();
+    const aw = document.getElementById('fixedWithdrawalControls');
+    const remLabel = document.querySelector('label[for="remainingAmount"]');
+    const remBlock = remLabel ? remLabel.parentElement : null; // wrapper of label + row
+    if (aw && remBlock && remBlock.parentElement) {
+      remBlock.parentElement.insertBefore(aw, remBlock);
+    }
+  }
+
+  function restoreAnnualWithdrawalPosition() {
+    const aw = document.getElementById('fixedWithdrawalControls');
+    if (!_awOriginalParent || !aw) return;
+    if (_awOriginalNext) _awOriginalParent.insertBefore(aw, _awOriginalNext);
+    else _awOriginalParent.appendChild(aw);
+  }
+
+  // Side-effect listeners: don't replace existing handlers
+  elements.modeSellBtn?.addEventListener('click', () => { try { moveAnnualWithdrawalAboveRemaining(); } catch(e) {} });
+  elements.modeLoanBtn?.addEventListener('click', () => { try { restoreAnnualWithdrawalPosition(); } catch(e) {} });
+
+  // Ensure Remaining Amount hint is positioned under the input/buttons row, not alongside
+  if (elements.remainingAmountInput && elements.remainingAmountHint) {
+    const row = elements.remainingAmountInput.parentElement; // this is the flex row with input + BTC/USD
+    if (row && row.insertAdjacentElement) {
+      row.insertAdjacentElement('afterend', elements.remainingAmountHint);
+    }
+  }
+
 
   // State
   let mainChart;
@@ -769,6 +816,79 @@
       prices.push(powerLawPrice(days));
     }
     return prices;
+  };
+
+  // Input validation function
+  const validateAndCorrectInput = (inputElement) => {
+    let value = inputElement.value;
+    
+    // If it contains ANY letters (including 'e'), reset to 0
+    if (value.match(/[a-zA-Z]/) || value.includes('-')) {
+      inputElement.value = '0';
+      return;
+    }
+    
+    // Remove any non-numeric characters except dots
+    let cleanValue = value.replace(/[^0-9.]/g, '');
+    
+    // If empty after cleaning, set to 0
+    if (cleanValue === '') {
+      inputElement.value = '0';
+      return;
+    }
+    
+    // Handle leading zeros
+    if (cleanValue.match(/^0+\d/)) {
+      // Remove leading zeros but keep one zero before decimal
+      if (cleanValue.includes('.')) {
+        // Case like 00.2523 -> 0.2523 or 010.346 -> 10.346
+        cleanValue = cleanValue.replace(/^0+/, '');
+        if (cleanValue.startsWith('.')) {
+          cleanValue = '0' + cleanValue;
+        }
+      } else {
+        // Case like 02 -> 2, 0026 -> 26
+        cleanValue = cleanValue.replace(/^0+/, '') || '0';
+      }
+    }
+    
+    // Determine field type and apply decimal limits
+    const fieldId = inputElement.id;
+    
+    // BTC fields (8 decimal places max)
+    if (fieldId === 'btcAmount' || fieldId === 'targetUnusedVsPeakFinal' || 
+        (fieldId === 'remainingAmount' && remainingAmountMode === 'BTC')) {
+      if (cleanValue.includes('.')) {
+        const parts = cleanValue.split('.');
+        if (parts[1] && parts[1].length > 8) {
+          parts[1] = parts[1].substring(0, 8);
+          cleanValue = parts[0] + '.' + parts[1];
+        }
+      }
+    }
+    
+    // USD fields (2 decimal places max)
+    else if (fieldId === 'purchasePrice' || fieldId === 'annualWithdrawal' || 
+             fieldId === 'minWithdrawal' || 
+             (fieldId === 'remainingAmount' && remainingAmountMode === 'USD')) {
+      if (cleanValue.includes('.')) {
+        const parts = cleanValue.split('.');
+        if (parts[1] && parts[1].length > 2) {
+          parts[1] = parts[1].substring(0, 2);
+          cleanValue = parts[0] + '.' + parts[1];
+        }
+      }
+    }
+    
+    // If still empty after all processing, set to 0
+    if (cleanValue === '') {
+      cleanValue = '0';
+    }
+    
+    // Update input value if it changed
+    if (cleanValue !== value) {
+      inputElement.value = cleanValue;
+    }
   };
 
   // Core Computations
@@ -1194,14 +1314,18 @@
     elements.endYearInput.min = '2026';
     elements.startYearInput.max = '2084';
     
-    // Calculate safe BTC for collateral based on these values
+    // Different behavior based on simulation mode and withdrawal strategy
     if (simulationMode === 'loan') {
       if (withdrawalMode === 'fixed') {
+        // Fixed mode: calculate BTC needed for the withdrawal amount
         calculateSafeCollateral();
       } else {
-        calculateSafeCollateralOptimized();
+        // Optimized mode: set a fixed BTC amount directly
+        elements.btcAmountInput.value = '1.00000000';
+        updateSimulation();
       }
     } else {
+      // Sell mode: calculate BTC needed for the withdrawal amount
       autoCalcBtcForSell();
     }
   };
@@ -1809,10 +1933,33 @@
       span.textContent = isFloat ? parseFloat(input.value).toFixed(1) : input.value;
     };
 
+    // Add input validation to all number inputs
+    const numberInputs = [
+      elements.btcAmountInput,
+      elements.annualWithdrawalInput,
+      elements.minWithdrawalInput,
+      elements.purchasePriceInput,
+      elements.remainingAmountInput,
+      elements.targetUnusedVsPeakFinalInput
+    ];
+
+    numberInputs.forEach(input => {
+      if (input) {
+        input.addEventListener('input', () => {
+          validateAndCorrectInput(input);
+        });
+      }
+    });
+
     elements.ltvInput.addEventListener('input', () => updateSliderLabel(elements.ltvInput, elements.ltvValueSpan));
     elements.interestRateInput.addEventListener('input', () => updateSliderLabel(elements.interestRateInput, elements.interestRateValueSpan, true));
     elements.inflationRateInput.addEventListener('input', () => updateSliderLabel(elements.inflationRateInput, elements.inflationRateValueSpan, true));
     elements.safetyMarginInput.addEventListener('input', () => updateSliderLabel(elements.safetyMarginInput, elements.safetyMarginValueSpan, true));
+    
+    // Carryover period slider
+    if (elements.carryoverPeriodInput && elements.carryoverPeriodValueSpan) {
+      elements.carryoverPeriodInput.addEventListener('input', () => updateSliderLabel(elements.carryoverPeriodInput, elements.carryoverPeriodValueSpan));
+    }
     
     // Tax rate slider (only available in sell mode)
     if (elements.taxRateInput && elements.taxRateValueSpan) {
@@ -1837,13 +1984,32 @@
         remainingAmountMode = 'BTC';
         elements.remainingAmountBTCBtn.classList.add('active');
         elements.remainingAmountUSDBtn.classList.remove('active');
-        });
-
+        if (elements.remainingAmountLabel) { elements.remainingAmountLabel.textContent = 'Remaining Amount (BTC)'; }
+        // Revalidate input with new decimal limits
+        if (elements.remainingAmountInput) {
+          validateAndCorrectInput(elements.remainingAmountInput);
+        }
+        if (elements.remainingAmountHint) {
+          const v = parseFloat(elements.remainingAmountInput?.value || '0');
+          if (isFinite(v) && v !== 0) elements.remainingAmountHint.classList.remove('hidden');
+          else elements.remainingAmountHint.classList.add('hidden');
+        }
+      });
       elements.remainingAmountUSDBtn.addEventListener('click', () => {
         remainingAmountMode = 'USD';
         elements.remainingAmountUSDBtn.classList.add('active');
         elements.remainingAmountBTCBtn.classList.remove('active');
-        });
+        if (elements.remainingAmountLabel) { elements.remainingAmountLabel.textContent = 'Remaining Amount (USD)'; }
+        // Revalidate input with new decimal limits
+        if (elements.remainingAmountInput) {
+          validateAndCorrectInput(elements.remainingAmountInput);
+        }
+        if (elements.remainingAmountHint) {
+          const v = parseFloat(elements.remainingAmountInput?.value || '0');
+          if (isFinite(v) && v !== 0) elements.remainingAmountHint.classList.remove('hidden');
+          else elements.remainingAmountHint.classList.add('hidden');
+        }
+      });
     }
 
     elements.startYearInput.addEventListener('input', () => {
@@ -1897,7 +2063,9 @@
     }
     if (elements.purchasePriceInput) simulationUpdateInputs.push(elements.purchasePriceInput);
     if (elements.carryoverPeriodInput) simulationUpdateInputs.push(elements.carryoverPeriodInput);
-simulationUpdateInputs.forEach(input => input.addEventListener('change', updateSimulation));
+    if (elements.remainingAmountInput) simulationUpdateInputs.push(elements.remainingAmountInput);
+    
+    simulationUpdateInputs.forEach(input => input.addEventListener('change', updateSimulation));
 
     // Special handlers for btcAmountInput and annualWithdrawalInput to avoid loops
     elements.btcAmountInput.addEventListener('change', () => {
@@ -1981,7 +2149,22 @@ simulationUpdateInputs.forEach(input => input.addEventListener('change', updateS
 
     elements.maximizeSafetyMarginBtn.addEventListener('click', maximizeSafetyMargin);
     elements.calculateSafeWithdrawalBtn.addEventListener('click', calculateSafeWithdrawal);
-    elements.exampleBtn.addEventListener('click', setExampleValues);
+    
+
+    // Show/hide Remaining Amount hint immediately on typing (treat empty as 0)
+    if (elements.remainingAmountInput && elements.remainingAmountHint) {
+      elements.remainingAmountInput.addEventListener('input', () => {
+        const v = parseFloat(elements.remainingAmountInput.value || '0');
+        if (isFinite(v) && v !== 0) elements.remainingAmountHint.classList.remove('hidden');
+        else elements.remainingAmountHint.classList.add('hidden');
+      });
+    }
+    // Hide Remaining Amount hint on calculate actions
+    if (elements.remainingAmountHint) {
+      elements.calculateSafeWithdrawalBtn?.addEventListener('click', () => { elements.remainingAmountHint.classList.add('hidden'); });
+      elements.calculateSafeCollateralBtn?.addEventListener('click', () => { elements.remainingAmountHint.classList.add('hidden'); });
+    }
+elements.exampleBtn.addEventListener('click', setExampleValues);
 
     elements.calculateSafeCollateralBtn.addEventListener('click', () => {
       if (simulationMode === 'loan') {
@@ -2040,6 +2223,9 @@ simulationUpdateInputs.forEach(input => input.addEventListener('change', updateS
     if (elements.taxRateValueSpan) {
       elements.taxRateValueSpan.textContent = elements.taxRateInput?.value || '0';
     }
+    if (elements.carryoverPeriodValueSpan) {
+      elements.carryoverPeriodValueSpan.textContent = elements.carryoverPeriodInput?.value || '0';
+    }
 
     // Hide tax controls and warning initially (default mode is loan)
     if (elements.taxControls) {
@@ -2059,11 +2245,20 @@ simulationUpdateInputs.forEach(input => input.addEventListener('change', updateS
 
     setupEventListeners();
     initializeChart();
+    if (elements.remainingAmountLabel) { elements.remainingAmountLabel.textContent = 'Remaining Amount (BTC)'; }
     // Don't auto-calculate with default values of 0
     updateSimulation();
+
+    // Apply AW/Remaining reorder on load
+    try {
+      if (elements.modeSellBtn?.classList.contains('active')) moveAnnualWithdrawalAboveRemaining();
+      else restoreAnnualWithdrawalPosition();
+    } catch(e) {}
+
   };
 })();
 </script>
 
 </body>
 </html>
+
