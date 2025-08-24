@@ -657,8 +657,91 @@
     
     // Sort by year to ensure proper line drawing
     combinedData.sort((a, b) => a.x - b.x);
-    
+
     return combinedData;
+  };
+
+  const buildDatasets = (mode, rows, historicalData) => {
+    const combinedSimData = createCombinedSimulationData(rows, historicalData);
+    const datasets = [];
+
+    if (historicalData.length > 0) {
+      datasets.push({
+        label: 'Historical Bitcoin Prices',
+        data: historicalData,
+        borderColor: '#f59e0b',
+        backgroundColor: 'rgba(245,158,11,0.1)',
+        borderWidth: 2,
+        tension: 0.1,
+        fill: false,
+        pointRadius: 1,
+        pointHoverRadius: 4,
+        yAxisID: 'yPrice'
+      });
+    }
+
+    const simData = combinedSimData.length > 0
+      ? combinedSimData
+      : rows.map(r => ({ x: r.year, ...r }));
+
+    if (simData.length > 0) {
+      datasets.push({
+        label: 'Power Law Support Price',
+        data: simData.map(d => ({ x: d.x, y: d.supportPrice })),
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16,185,129,0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: false,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        yAxisID: 'yPrice'
+      });
+
+      if (mode === 'loan') {
+        datasets.push({
+          label: 'Maximum Possible Loan',
+          data: simData.map(d => ({ x: d.x, y: d.maxLoanPossible })),
+          borderColor: '#3b82f6',
+          backgroundColor: 'transparent',
+          borderWidth: 3,
+          borderDash: [5,5],
+          tension: 0.4,
+          fill: false,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          yAxisID: 'yLoan'
+        });
+
+        datasets.push({
+          label: 'Total Accumulated Debt',
+          data: simData.map(d => ({ x: d.x, y: d.totalDebt })),
+          borderColor: '#ef4444',
+          backgroundColor: 'rgba(239,68,68,0.1)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: false,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          yAxisID: 'yLoan'
+        });
+      } else if (mode === 'sell') {
+        datasets.push({
+          label: 'Remaining BTC Balance',
+          data: simData.map(d => ({ x: d.x, y: d.remainingBtc })),
+          borderColor: '#ef4444',
+          backgroundColor: 'rgba(239,68,68,0.1)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: false,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          yAxisID: 'y'
+        });
+      }
+    }
+
+    return datasets;
   };
 
   // DOM Elements Cache
@@ -1547,111 +1630,8 @@
       }
     };
     
-    // Create combined data: interpolated (up to 2025) + annual (beyond 2025)
-    const combinedSimData = createCombinedSimulationData(rows, historicalData);
-    
-    const datasets = [];
-    
-    // Add historical data first (all precise monthly points)
-    if (historicalData.length > 0) {
-      datasets.push({ 
-        label: 'Historical Bitcoin Prices', 
-        data: historicalData,
-        borderColor: '#f59e0b', 
-        backgroundColor: 'rgba(245,158,11,0.1)', 
-        borderWidth: 2, 
-        tension: 0.1, 
-        fill: false, 
-        pointRadius: 1, 
-        pointHoverRadius: 4,
-        yAxisID: 'yPrice' 
-      });
-    }
-    
-    // Add simulation lines with combined data (interpolated + future)
-    if (combinedSimData.length > 0) {
-      datasets.push({
-        label: 'Power Law Support Price', 
-        data: combinedSimData.map(d => ({ x: d.x, y: d.supportPrice })), 
-        borderColor: '#10b981', 
-        backgroundColor: 'rgba(16,185,129,0.1)', 
-        borderWidth: 2, 
-        tension: 0.4, 
-        fill: false, 
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        yAxisID: 'yPrice' 
-      });
-      
-      datasets.push({
-        label: 'Maximum Possible Loan', 
-        data: combinedSimData.map(d => ({ x: d.x, y: d.maxLoanPossible })), 
-        borderColor: '#3b82f6', 
-        backgroundColor: 'transparent', 
-        borderWidth: 3, 
-        borderDash: [5,5], 
-        tension: 0.4, 
-        fill: false, 
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        yAxisID: 'yLoan' 
-      });
-      
-      datasets.push({
-        label: 'Total Accumulated Debt', 
-        data: combinedSimData.map(d => ({ x: d.x, y: d.totalDebt })), 
-        borderColor: '#ef4444', 
-        backgroundColor: 'rgba(239,68,68,0.1)', 
-        borderWidth: 3, 
-        tension: 0.4, 
-        fill: false, 
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        yAxisID: 'yLoan' 
-      });
-    } else {
-      // Fallback to original yearly data if no interpolation possible
-      datasets.push({
-        label: 'Power Law Support Price', 
-        data: rows.map(r => ({ x: r.year, y: r.supportPrice })), 
-        borderColor: '#10b981', 
-        backgroundColor: 'rgba(16,185,129,0.1)', 
-        borderWidth: 2, 
-        tension: 0.4, 
-        fill: false, 
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        yAxisID: 'yPrice' 
-      });
-      
-      datasets.push({
-        label: 'Maximum Possible Loan', 
-        data: rows.map(r => ({ x: r.year, y: r.maxLoanPossible })), 
-        borderColor: '#3b82f6', 
-        backgroundColor: 'transparent', 
-        borderWidth: 3, 
-        borderDash: [5,5], 
-        tension: 0.4, 
-        fill: false, 
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        yAxisID: 'yLoan' 
-      });
-      
-      datasets.push({
-        label: 'Total Accumulated Debt', 
-        data: rows.map(r => ({ x: r.year, y: r.totalDebt })), 
-        borderColor: '#ef4444', 
-        backgroundColor: 'rgba(239,68,68,0.1)', 
-        borderWidth: 3, 
-        tension: 0.4, 
-        fill: false, 
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        yAxisID: 'yLoan' 
-      });
-    }
-    
+    const datasets = buildDatasets('loan', rows, historicalData);
+
     mainChart.data = { datasets };
     
     // Configure tooltip for perfect alignment
@@ -1703,83 +1683,8 @@
       }
     };
     
-    // Create combined data: interpolated (up to 2025) + annual (beyond 2025)
-    const combinedSimData = createCombinedSimulationData(rows, historicalData);
-    
-    const datasets = [];
-    
-    // Add historical data first (all precise monthly points)
-    if (historicalData.length > 0) {
-      datasets.push({ 
-        label: 'Historical Bitcoin Prices', 
-        data: historicalData,
-        borderColor: '#f59e0b', 
-        backgroundColor: 'rgba(245,158,11,0.1)', 
-        borderWidth: 2, 
-        tension: 0.1, 
-        fill: false, 
-        pointRadius: 1, 
-        pointHoverRadius: 4,
-        yAxisID: 'yPrice' 
-      });
-    }
-    
-    // Add simulation lines with combined data (interpolated + future)
-    if (combinedSimData.length > 0) {
-      datasets.push({
-        label: 'Power Law Support Price', 
-        data: combinedSimData.map(d => ({ x: d.x, y: d.supportPrice })), 
-        borderColor: '#10b981', 
-        backgroundColor: 'rgba(16,185,129,0.1)', 
-        borderWidth: 2, 
-        tension: 0.4, 
-        fill: false, 
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        yAxisID: 'yPrice' 
-      });
-      
-      datasets.push({
-        label: 'Remaining BTC Balance', 
-        data: combinedSimData.map(d => ({ x: d.x, y: d.remainingBtc })), 
-        borderColor: '#ef4444', 
-        backgroundColor: 'rgba(239,68,68,0.1)', 
-        borderWidth: 3, 
-        tension: 0.4, 
-        fill: false, 
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        yAxisID: 'y' 
-      });
-    } else {
-      // Fallback to original yearly data
-      datasets.push({
-        label: 'Power Law Support Price', 
-        data: rows.map(r => ({ x: r.year, y: r.supportPrice })), 
-        borderColor: '#10b981', 
-        backgroundColor: 'rgba(16,185,129,0.1)', 
-        borderWidth: 2, 
-        tension: 0.4, 
-        fill: false, 
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        yAxisID: 'yPrice' 
-      });
-      
-      datasets.push({
-        label: 'Remaining BTC Balance', 
-        data: rows.map(r => ({ x: r.year, y: r.remainingBtc })), 
-        borderColor: '#ef4444', 
-        backgroundColor: 'rgba(239,68,68,0.1)', 
-        borderWidth: 3, 
-        tension: 0.4, 
-        fill: false, 
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        yAxisID: 'y' 
-      });
-    }
-    
+    const datasets = buildDatasets('sell', rows, historicalData);
+
     mainChart.data = { datasets };
     
     // Configure tooltip for perfect alignment
